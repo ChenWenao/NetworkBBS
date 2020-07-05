@@ -16,10 +16,10 @@ public class CommunityRepository {
     public boolean insertCommunity(Community newCommunity) {
         try {
             template.update("insert into networkbbs.community(" +
-                    "communityName" +
-                    "communityIcon" +
-                    "communityIntroduction" +
-                    "communityOwnerId,) values (?,?,?,?)",
+                    "communityName," +
+                    "communityIcon," +
+                    "communityIntroduction," +
+                    "communityOwnerId) values (?,?,?,?)",
                     newCommunity.getCommunityName(),
                     newCommunity.getCommunityIcon(),
                     newCommunity.getCommunityIntroduction(),
@@ -27,9 +27,8 @@ public class CommunityRepository {
             return true;
         }catch (Exception e){
             System.out.println(e);
-        }finally {
-            return false;
         }
+        return false;
     }
 
 

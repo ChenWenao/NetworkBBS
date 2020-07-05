@@ -3,6 +3,7 @@ package com.Controller;
 import com.Bean.Community;
 import com.Bean.User;
 import com.Service.CommunityService;
+import com.Service.ToolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpSession;
 public class CommunityController {
     @Autowired
     private CommunityService communityService;
+    private ToolService toolService=new ToolService();
     //增
 
     //新建吧
@@ -27,16 +29,16 @@ public class CommunityController {
     public boolean newCommunity(HttpSession session, @ModelAttribute(value = "newCommunity") Community newCommunity, @RequestParam("communityImg") MultipartFile communityImg) {
         //-----------------------------暂时新添的Session-------------------------------------
         User loginUser=new User();
+        loginUser.setUserId(1);
         session.setAttribute("loginUser",loginUser);
         //---------------------------------------------------------------------------------
 
         //判断是否传入图片。
         if (communityImg.isEmpty())
             return false;
-
-
+        newCommunity.setCommunityIcon(toolService.FileToURL(communityImg,"community"));
+        newCommunity.setCommunityOwnerId(((User)session.getAttribute("loginUser")).getUserId());
         return communityService.addNewCommunity(newCommunity);
-
     }
 
 }
