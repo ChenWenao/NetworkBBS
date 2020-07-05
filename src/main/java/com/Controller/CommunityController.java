@@ -1,6 +1,7 @@
 package com.Controller;
 
 import com.Bean.Community;
+import com.Bean.User;
 import com.Service.CommunityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -26,7 +27,7 @@ public class CommunityController {
     public boolean newCommunity(HttpSession session, @ModelAttribute(value = "newCommunity") Community newCommunity, @RequestParam("communityImg") MultipartFile communityImg) {
         //-----------------------------暂时新添的Session-------------------------------------
         User loginUser=new User();
-        session.setAttribute("loginUser",);
+        session.setAttribute("loginUser",loginUser);
         //---------------------------------------------------------------------------------
 
         //判断是否传入图片。
