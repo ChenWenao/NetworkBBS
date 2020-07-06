@@ -36,7 +36,7 @@ public class CommunityRepository {
     //删
     public boolean deleteCommunity(int communityId) {
         try {
-            template.update("delete from Community where communityId = ?", communityId);
+            template.update("delete from community where communityId = ?", communityId);
             return true;
         } catch (Exception e) {
             System.out.println(e);
@@ -47,7 +47,7 @@ public class CommunityRepository {
     //改
     public boolean updateCommunity(Community modifyCommunity) {
         try {
-            template.update("update Community set communityName=?," +
+            template.update("update community set communityName=?," +
                             "communityIcon=?," +
                             "communityIntroduction=?" +
                             "where communityId=?",
@@ -64,11 +64,30 @@ public class CommunityRepository {
 
 
     //查
-    //通过id查询吧
-    public Community selectCommunityById(int communityId) {
+    //单查询
+    public Community selectCommunityById(int communityId){
         try {
-            List<Community> communities = template.query("select * from Community where communityId=?", communityRowMapper, communityId);
+            List<Community> communities=template.query("select * from community,user where communityId=?",communityRowMapper,communityId);
             return communities.get(0);
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return null;
+    }
+
+    //多查询
+    public List<Community> selectCommunities(String param, String value, String order_by, int order, int pageSize, int page) {
+        try {
+            String sql = "select * from community,user where userId = communityOwnerId ";
+            if (param != "all" || value != "all")
+                sql += " and " + param + " like '%" + value + "%'";
+            sql += " order by " + order_by;
+            if (order == 1)
+                sql += " desc";
+            if (page != 0 || pageSize != 0)
+                sql += " limit " + (page - 1) * pageSize + "," + pageSize;
+            List<Community> communities = template.query(sql, communityRowMapper);
+            return communities;
         } catch (Exception e) {
             System.out.println(e);
         }

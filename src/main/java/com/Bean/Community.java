@@ -11,6 +11,15 @@ public class Community {
     private int communityHeat;
     private int communitySize;
     private int communityOwnerId;
+    private String communityOwnerName;
+
+    public String getCommunityOwnerName() {
+        return communityOwnerName;
+    }
+
+    public void setCommunityOwnerName(String communityOwnerName) {
+        this.communityOwnerName = communityOwnerName;
+    }
 
     public int getCommunityId() {
         return communityId;

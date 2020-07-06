@@ -5,13 +5,11 @@ import com.Bean.User;
 import com.Service.CommunityService;
 import com.Service.ToolService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @RestController
 public class CommunityController {
@@ -91,4 +89,28 @@ public class CommunityController {
         return true;
     }
 
+    //查
+    //单查询（精准查询）
+    @GetMapping("Community/communityById/{communityId}")
+    public Community searchCommunity(@PathVariable("communityId")int communityId){
+        return communityService.getCommunityById(communityId);
+    }
+
+    //多查询
+    //param：用于搜索，表示搜索哪个字段
+    //value：用于搜索，搜索param的字段中包括value的结果。
+    //若param和value都为“all”，表示不定向搜索。
+    //order_by：表示根据哪个字段排序。
+    //order：用于排序，为0表示正序，为1表示倒序。
+    //pageSize：表示分页页面大小。
+    //page：表示查询第几页的数据。
+    //若pageSize和page都为0，则不分页，返回所有数据。
+    //举例：要查询吧名包括“高数”的吧，按照id正序排列，一页5个，查询第2页的数据，
+    //      则url为：Communities/communityName/高数/communityId/0/5/2
+    //要查询所有的吧，按照courseName倒序排序，一页7个，查询第3页的数据，
+    //      则url为：Communities/all/all/communityName/1/7/3
+    @GetMapping("Communities/{param}/{value}/{order_by}/{order}/{pageSize}/{page}")
+    public List<Community> searchCommunity(@PathVariable("param")String param, @PathVariable("value")String value,@PathVariable("order_by")String order_by,@PathVariable("order")int order,@PathVariable("pageSize")int pageSize,@PathVariable("page")int page){
+        return communityService.getCommunities(param, value, order_by, order, pageSize, page);
+    }
 }

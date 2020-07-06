@@ -5,6 +5,8 @@ import com.Dao.CommunityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CommunityService {
     @Autowired
@@ -30,4 +32,7 @@ public class CommunityService {
         return communityRepository.selectCommunityById(communityId);
     }
 
+    public List<Community> getCommunities(String param,String value,String order_by,int order,int pageSize,int page){
+        return communityRepository.selectCommunities(param, value, order_by, order, pageSize, page);
+    }
 }

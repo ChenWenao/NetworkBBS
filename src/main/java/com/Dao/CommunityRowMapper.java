@@ -18,6 +18,7 @@ public class CommunityRowMapper implements RowMapper<Community> {
         community.setCommunityHeat(resultSet.getInt("communityHeat"));
         community.setCommunitySize(resultSet.getInt("communitySize"));
         community.setCommunityOwnerId(resultSet.getInt("communityOwnerId"));
+        community.setCommunityOwnerName(resultSet.getString("userName"));
         return community;
     }
 }
