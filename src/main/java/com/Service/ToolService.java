@@ -35,9 +35,18 @@ public class ToolService {
             return newFile.getAbsolutePath();
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
-            return "";
         }
+        return "";
+    }
+
+    //删除文件，返回删除结果。
+    public boolean deleteFile(String fileURL){
+        File file = new File(fileURL);
+        if (file.exists() && file.isFile()) {
+            file.delete();
+            return true;
+        }
+        return false;
     }
 
 }

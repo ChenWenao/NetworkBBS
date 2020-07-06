@@ -15,5 +15,19 @@ public class CommunityService {
         return communityRepository.insertCommunity(newCommunity);
     }
 
+    //删
+    public boolean removeCommunity(int communityId){
+        return communityRepository.deleteCommunity(communityId);
+    }
+
+    //改
+    public boolean modifyCommunity(Community modifyCommunity){
+        return communityRepository.updateCommunity(modifyCommunity);
+    }
+
+    //查
+    public Community getCommunityById(int communityId){
+        return communityRepository.selectCommunityById(communityId);
+    }
 
 }
