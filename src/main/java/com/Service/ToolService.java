@@ -7,17 +7,17 @@ import java.io.IOException;
 
 public class ToolService {
 
-
+    //存储文件，转为URL返回
+    //第一个参数为文件，第二个参数为文件类型，只可以为："community"，"user"其一，表示该文件属于贴吧头像还是用户头像
     public String FileToURL(MultipartFile file,String FileType){
-
         //设置imgName。
         String imgName = System.currentTimeMillis() + file.getOriginalFilename();
         //根据FileType选择存储在何处。
         String fileDirPath="";
         if("community".equals(FileType))
-            fileDirPath = "static/img/CommunityImg";
+            fileDirPath = "src/main/resources/static/img/CommunityImg";
         else if ("user".equals(FileType))
-            fileDirPath= "static/img/UserImg";
+            fileDirPath= "src/main/resources/static/img/UserImg";
         File fileDir = new File(fileDirPath);
         if (!fileDir.exists()) {
             // 递归生成文件夹
@@ -31,13 +31,22 @@ public class ToolService {
             // 上传图片到 -》 “绝对路径”
             file.transferTo(newFile);
             //System.out.println("上传成功！");
-            //设置课程图片Logo。
+            //返回图片地址
             return newFile.getAbsolutePath();
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
-            return "";
         }
+        return "";
+    }
+
+    //删除文件，返回删除结果。
+    public boolean deleteFile(String fileURL){
+        File file = new File(fileURL);
+        if (file.exists() && file.isFile()) {
+            file.delete();
+            return true;
+        }
+        return false;
     }
 
 }
