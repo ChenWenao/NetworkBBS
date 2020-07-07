@@ -11,6 +11,15 @@ public class Post {
     private int postReplies;
     private int postOwnerId;
     private int postComId;
+    private String postComName;
+
+    public String getPostComName() {
+        return postComName;
+    }
+
+    public void setPostComName(String postComName) {
+        this.postComName = postComName;
+    }
 
     public int getPostId() {
         return postId;

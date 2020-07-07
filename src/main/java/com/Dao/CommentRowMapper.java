@@ -17,7 +17,7 @@ public class CommentRowMapper implements RowMapper<Comment> {
         comment.setCommentOwnerId(resultSet.getInt("commentOwnerId"));
         comment.setCommentReplyName(resultSet.getString("commentReplyName"));
         comment.setCommentReplyContent(resultSet.getString("commentReplyContent"));
-        comment.setCommentTime(resultSet.getTime("commentTime"));
+        comment.setCommentTime(resultSet.getTimestamp("commentTime"));
         comment.setCommentRead(resultSet.getBoolean("commentRead"));
         return comment;
     }

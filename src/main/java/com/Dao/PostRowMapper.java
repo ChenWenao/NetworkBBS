@@ -13,7 +13,7 @@ public class PostRowMapper implements RowMapper<Post>{
         post.setPostId(resultSet.getInt("postId"));
         post.setPostTitle(resultSet.getString("postTitle"));
         post.setPostContent(resultSet.getString("postContent"));
-        post.setPostTime(resultSet.getTime("postTime"));
+        post.setPostTime(resultSet.getTimestamp("postTime"));
         post.setPostHeat(resultSet.getInt("postHeat"));
         post.setPostReplies(resultSet.getInt("postReplies"));
         post.setPostOwnerId(resultSet.getInt("postOwnerId"));
