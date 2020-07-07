@@ -10,7 +10,7 @@ public class User {
     private String userPassword;
     private String userPhoneNumber;
     private String userSecurityCode;
-    private Date userRegistrationtime;
+    private Date userRegistrationTime;
     private int userLevel;
 
     public int getUserId() {
@@ -69,12 +69,12 @@ public class User {
         this.userSecurityCode = userSecurityCode;
     }
 
-    public Date getUserRegistrationtime() {
-        return userRegistrationtime;
+    public Date getUserRegistrationTime() {
+        return userRegistrationTime;
     }
 
-    public void setUserRegistrationtime(Date userRegistrationtime) {
-        this.userRegistrationtime = userRegistrationtime;
+    public void setUserRegistrationTime(Date userRegistrationTime) {
+        this.userRegistrationTime = userRegistrationTime;
     }
 
     public int getUserLevel() {
