@@ -39,9 +39,9 @@ public class UserRepository {
         try {
             template.update("update User set userName=?," +
                             "userIcon=?," +
-                            "userPassword=?," +
+                            "userPassword?," +
                             "userPhoneNumber=?," +
-                            "userSecurityCode=? " +
+                            "userSecurityCode=?" +
                             "where userId=?"
                     , modifyUser.getUserName()
                     , modifyUser.getUserIcon()
