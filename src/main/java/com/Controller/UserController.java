@@ -2,6 +2,7 @@ package com.Controller;
 
 import com.Bean.*;
 import com.Service.UserService;
+import com.Service.ToolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +18,7 @@ import java.security.NoSuchAlgorithmException;
 public class UserController {
     @Autowired
     private UserService userService;
+    private ToolService toolService = new ToolService();
 
     //通过id查询用户信息，需传入userId
     @GetMapping("User/userById/{userId}")
@@ -25,8 +27,14 @@ public class UserController {
     }
 
     //修改个人信息
+    //传入modifyUser和头像，包含userName、userPassword、userPhoneNumber、userSecurityCode
     @PostMapping("User/modifyUser")
-    public String modifyUser(@RequestParam("userImg") MultipartFile userImg, @ModelAttribute(value = "modifyUser") User modifyUser) {
+    public String modifyUser(HttpSession session, @RequestParam("userImg") MultipartFile userImg, @ModelAttribute(value = "modifyUser") User modifyUser) {
+        //-----------------------------暂时新添的Session-------------------------------------
+        User loginUser = new User();
+        loginUser.setUserId(1);
+        session.setAttribute("loginUser", loginUser);
+        //---------------------------------------------------------------------------------
         String msg = "";
         User oldUser = userService.getUserById(modifyUser.getUserId());
         //判断用户Id是否存在
@@ -35,6 +43,10 @@ public class UserController {
             if(modifyUser.getUserName() != null) {
                 msg += "用户名已被占用，信息修改失败！";
             } else {
+                //删除旧头像
+                toolService.deleteFile(oldUser.getUserIcon());
+                //修改信息
+                modifyUser.setUserIcon(toolService.FileToURL(userImg, "user"));
                 userService.modifyUser(modifyUser);
                 msg += "信息修改成功！";
             }
