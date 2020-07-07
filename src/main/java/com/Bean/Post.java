@@ -10,8 +10,18 @@ public class Post {
     private int postHeat;
     private int postReplies;
     private int postOwnerId;
+    private String postOwnerName;
     private int postComId;
     private String postComName;
+
+    public String getPostOwnerName() {
+        return postOwnerName;
+    }
+
+    public void setPostOwnerName(String postOwnerName) {
+        this.postOwnerName = postOwnerName;
+    }
+
 
     public String getPostComName() {
         return postComName;

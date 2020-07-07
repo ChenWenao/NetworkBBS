@@ -93,7 +93,7 @@ public class CommunityRepository {
     //单查询
     public Community selectCommunityById(int communityId){
         try {
-            List<Community> communities=template.query("select * from community,user where communityId=?",communityRowMapper,communityId);
+            List<Community> communities=template.query("select * from community,user where communityOwnerId=userId and communityId=?",communityRowMapper,communityId);
             return communities.get(0);
         }catch (Exception e){
             System.out.println(e);
