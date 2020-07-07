@@ -37,8 +37,7 @@ public class UserRepository {
     //修改个人信息
     public boolean modifyUser(User modifyUser) {
         try {
-            template.update("update User set " +
-                            "userName=?," +
+            template.update("update User set userName=?," +
                             "userIcon=?," +
                             "userPassword?," +
                             "userPhoneNumber=?," +
@@ -56,6 +55,23 @@ public class UserRepository {
             System.out.println(e);
         }
         return false;
+    }
+
+    //注册
+    public boolean insertUser(User newUser) {
+        try {
+            template.update("insert into User(userName,userIcon,userPassword,userPhoneNumber,userSecurityCode) values (?,?,?,?,?)"
+                    , newUser.getUserName()
+                    , newUser.getUserIcon()
+                    , newUser.getUserPassword()
+                    , newUser.getUserPhoneNumber()
+                    , newUser.getUserSecurityCode()
+            );
+            return true;
+        } catch (Exception e) {
+            System.out.println(e);
+            return false;
+        }
     }
 
     //登录

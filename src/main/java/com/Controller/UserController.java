@@ -30,11 +30,6 @@ public class UserController {
     //传入modifyUser和头像，包含userId、userName、userPassword、userPhoneNumber、userSecurityCode
     @PostMapping("User/modifyUser")
     public String modifyUser(HttpSession session, @RequestParam("userImg") MultipartFile userImg, @ModelAttribute(value = "modifyUser") User modifyUser) {
-        //-----------------------------暂时新添的Session-------------------------------------
-        User loginUser = new User();
-        loginUser.setUserId(1);
-        session.setAttribute("loginUser", loginUser);
-        //---------------------------------------------------------------------------------
         String msg = "";
         User bfUser = userService.getUserById(modifyUser.getUserId());
         //判断用户Id是否存在
@@ -53,6 +48,9 @@ public class UserController {
         }
         return "信息修改失败！";
     }
+
+    //注册
+
 
     //登录
     //传入userCode,userPassword

@@ -24,6 +24,11 @@ public class UserService {
         return userRepository.modifyUser(user);
     }
 
+    //注册
+    public boolean addNewUser(User newUser) {
+        return userRepository.insertUser(newUser);
+    }
+
     //登录
     public User login(String userCode, String userPassword) {
         return userRepository.findUser(userCode,userPassword);
