@@ -47,7 +47,8 @@ public class PostController {
 
 
         Post post_del=postService.getPostById(postId);
-
+        if (post_del==null)
+            return false;
         if(post_del.getPostOwnerId()==((User) session.getAttribute("loginUser")).getUserId()||((User) session.getAttribute("loginUser")).getUserLevel()==0){
             return postService.removePost(post_del.getPostId(),post_del.getPostComId());
         }else {

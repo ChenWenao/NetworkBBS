@@ -91,6 +91,8 @@ public class CommunityController {
         //---------------------------------------------------------------------------------
 
         Community community = communityService.getCommunityById(communityId);
+        if(community==null)
+            return false;
         if (community.getCommunityOwnerId() == ((User) session.getAttribute("loginUser")).getUserId() || ((User) session.getAttribute("loginUser")).getUserLevel() == 0) {
             toolService.deleteFile(community.getCommunityIcon());
             communityService.removeCommunity(community.getCommunityId());
