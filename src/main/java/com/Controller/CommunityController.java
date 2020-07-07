@@ -29,6 +29,7 @@ public class CommunityController {
         //-----------------------------暂时新添的Session-------------------------------------
         User loginUser = new User();
         loginUser.setUserId(1);
+        loginUser.setUserLevel(0);
         session.setAttribute("loginUser", loginUser);
         //---------------------------------------------------------------------------------
 
@@ -53,6 +54,7 @@ public class CommunityController {
         //-----------------------------暂时新添的Session-------------------------------------
         User loginUser = new User();
         loginUser.setUserId(1);
+        loginUser.setUserLevel(0);
         session.setAttribute("loginUser", loginUser);
         //---------------------------------------------------------------------------------
 
@@ -66,6 +68,7 @@ public class CommunityController {
         //-----------------------------暂时新添的Session-------------------------------------
         User loginUser = new User();
         loginUser.setUserId(1);
+        loginUser.setUserLevel(0);
         session.setAttribute("loginUser", loginUser);
         //---------------------------------------------------------------------------------
 
@@ -77,16 +80,19 @@ public class CommunityController {
     //吧主放弃吧，或者管理员封禁吧时调用。
     //调用该接口时，后台会做身份核验，若登录的用户不是该吧的吧主，或者用户不是管理员，则会返回false
     //需要传入的值：communityId
-    @PostMapping("Community/dropCommunity")
-    public boolean dropCommunity(HttpSession session, @ModelAttribute(value = "communityId") int communityId) {
+    @GetMapping("Community/dropCommunity/{communityId}")
+    public boolean dropCommunity(HttpSession session, @PathVariable("communityId") int communityId) {
 
         //-----------------------------暂时新添的Session-------------------------------------
         User loginUser = new User();
         loginUser.setUserId(1);
+        loginUser.setUserLevel(0);
         session.setAttribute("loginUser", loginUser);
         //---------------------------------------------------------------------------------
 
         Community community = communityService.getCommunityById(communityId);
+        if(community==null)
+            return false;
         if (community.getCommunityOwnerId() == ((User) session.getAttribute("loginUser")).getUserId() || ((User) session.getAttribute("loginUser")).getUserLevel() == 0) {
             toolService.deleteFile(community.getCommunityIcon());
             communityService.removeCommunity(community.getCommunityId());
@@ -108,6 +114,7 @@ public class CommunityController {
         //-----------------------------暂时新添的Session-------------------------------------
         User loginUser = new User();
         loginUser.setUserId(1);
+        loginUser.setUserLevel(0);
         session.setAttribute("loginUser", loginUser);
         //---------------------------------------------------------------------------------
         //删除旧的图片

@@ -17,7 +17,9 @@ public class PostRowMapper implements RowMapper<Post>{
         post.setPostHeat(resultSet.getInt("postHeat"));
         post.setPostReplies(resultSet.getInt("postReplies"));
         post.setPostOwnerId(resultSet.getInt("postOwnerId"));
+        post.setPostOwnerName(resultSet.getString("userName"));
         post.setPostComId(resultSet.getInt("postComId"));
+        post.setPostComName(resultSet.getString("communityName"));
         return post;
     }
 }
