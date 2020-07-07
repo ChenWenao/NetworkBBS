@@ -27,7 +27,7 @@ public class UserController {
     }
 
     //修改个人信息
-    //传入modifyUser和头像，包含userName、userPassword、userPhoneNumber、userSecurityCode
+    //传入modifyUser和头像，包含userId、userName、userPassword、userPhoneNumber、userSecurityCode
     @PostMapping("User/modifyUser")
     public String modifyUser(HttpSession session, @RequestParam("userImg") MultipartFile userImg, @ModelAttribute(value = "modifyUser") User modifyUser) {
         //-----------------------------暂时新添的Session-------------------------------------
