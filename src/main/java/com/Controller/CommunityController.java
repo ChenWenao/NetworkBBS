@@ -37,7 +37,39 @@ public class CommunityController {
             return false;
         newCommunity.setCommunityIcon(toolService.FileToURL(communityImg, "community"));
         newCommunity.setCommunityOwnerId(((User) session.getAttribute("loginUser")).getUserId());
-        return communityService.addNewCommunity(newCommunity);
+        if (communityService.addNewCommunity(newCommunity)) {
+            return true;
+        } else {
+            toolService.deleteFile(newCommunity.getCommunityIcon());
+            return false;
+        }
+    }
+
+    //关注吧
+    //处理逻辑：当前登录的用户关注传入的communityId对应的吧
+    @GetMapping("Community/collectCommunity/{communityId}")
+    public boolean collectCommunity(HttpSession session, @PathVariable("communityId") int communityId) {
+
+        //-----------------------------暂时新添的Session-------------------------------------
+        User loginUser = new User();
+        loginUser.setUserId(1);
+        session.setAttribute("loginUser", loginUser);
+        //---------------------------------------------------------------------------------
+
+        return communityService.collectCommunityUser(((User) session.getAttribute("loginUser")).getUserId(), communityId);
+    }
+
+    //取关
+    @GetMapping("Community/unCollectCommunity/{communityId}")
+    public boolean unCollectCommunity(HttpSession session, @PathVariable("communityId") int communityId) {
+
+        //-----------------------------暂时新添的Session-------------------------------------
+        User loginUser = new User();
+        loginUser.setUserId(1);
+        session.setAttribute("loginUser", loginUser);
+        //---------------------------------------------------------------------------------
+
+        return communityService.unCollectCommunityUser(((User) session.getAttribute("loginUser")).getUserId(), communityId);
     }
 
     //删
@@ -53,7 +85,6 @@ public class CommunityController {
         loginUser.setUserId(1);
         session.setAttribute("loginUser", loginUser);
         //---------------------------------------------------------------------------------
-
 
         Community community = communityService.getCommunityById(communityId);
         if (community.getCommunityOwnerId() == ((User) session.getAttribute("loginUser")).getUserId() || ((User) session.getAttribute("loginUser")).getUserLevel() == 0) {
@@ -92,25 +123,21 @@ public class CommunityController {
     //查
     //单查询（精准查询）
     @GetMapping("Community/communityById/{communityId}")
-    public Community searchCommunity(@PathVariable("communityId")int communityId){
+    public Community searchCommunity(@PathVariable("communityId") int communityId) {
         return communityService.getCommunityById(communityId);
     }
 
     //多查询
     //param：用于搜索，表示搜索哪个字段
-    //value：用于搜索，搜索param的字段中包括value的结果。
+    //qw：用于搜索，搜索param的字段中包括value的结果。
     //若param和value都为“all”，表示不定向搜索。
     //order_by：表示根据哪个字段排序。
     //order：用于排序，为0表示正序，为1表示倒序。
     //pageSize：表示分页页面大小。
     //page：表示查询第几页的数据。
     //若pageSize和page都为0，则不分页，返回所有数据。
-    //举例：要查询吧名包括“高数”的吧，按照id正序排列，一页5个，查询第2页的数据，
-    //      则url为：Communities/communityName/高数/communityId/0/5/2
-    //要查询所有的吧，按照courseName倒序排序，一页7个，查询第3页的数据，
-    //      则url为：Communities/all/all/communityName/1/7/3
-    @GetMapping("Communities/{param}/{value}/{order_by}/{order}/{pageSize}/{page}")
-    public List<Community> searchCommunity(@PathVariable("param")String param, @PathVariable("value")String value,@PathVariable("order_by")String order_by,@PathVariable("order")int order,@PathVariable("pageSize")int pageSize,@PathVariable("page")int page){
+    @GetMapping("Communities/search")
+    public List<Community> searchCommunities(@RequestParam(name = "param",defaultValue = "communityName") String param, @RequestParam("qw") String value, @RequestParam(name="order_by",defaultValue = "communityHeat") String order_by, @RequestParam(name="order",defaultValue = "0") int order, @RequestParam(name="pageSize",defaultValue = "5") int pageSize, @RequestParam(name="page",defaultValue = "1") int page) {
         return communityService.getCommunities(param, value, order_by, order, pageSize, page);
     }
 }

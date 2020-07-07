@@ -17,6 +17,14 @@ public class CommunityService {
         return communityRepository.insertCommunity(newCommunity);
     }
 
+    public boolean collectCommunityUser(int userId,int communityId){
+        return communityRepository.insertCommunityUser(userId, communityId);
+    }
+
+    public boolean unCollectCommunityUser(int userId,int communityId){
+        return communityRepository.deleteCommunityUser(userId, communityId);
+    }
+
     //删
     public boolean removeCommunity(int communityId){
         return communityRepository.deleteCommunity(communityId);

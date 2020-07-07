@@ -17,7 +17,7 @@ public class CommunityRepository {
     //新建吧
     public boolean insertCommunity(Community newCommunity) {
         try {
-            template.update("insert into networkbbs.community(" +
+            template.update("insert into community(" +
                             "communityName," +
                             "communityIcon," +
                             "communityIntroduction," +
@@ -31,6 +31,32 @@ public class CommunityRepository {
             System.out.println(e);
         }
         return false;
+    }
+
+    //关注吧
+    public boolean insertCommunityUser(int userId,int communityId){
+        try {
+            template.update("insert into user_community values (?,?)",userId,communityId);
+            template.update("update community set communityHeat=communityHeat+1");
+            return true;
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return false;
+
+    }
+
+    //取关吧
+    public boolean deleteCommunityUser(int userId,int communityId){
+        try {
+            template.update("delete from user_community where userId=? and communityId=?",userId,communityId);
+            template.update("update community set communityHeat=communityHeat-1");
+            return true;
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return false;
+
     }
 
     //删
