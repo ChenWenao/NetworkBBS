@@ -15,6 +15,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+@RestController
 public class UserController {
     @Autowired
     private UserService userService;
