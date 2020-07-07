@@ -24,6 +24,16 @@ public class UserRepository {
         return null;
     }
 
+    public User selectUserByName(String userName) {
+        try {
+            List<User> users = template.query("select * from User where userName =?", userRowMapper, userName);
+            return users.get(0);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
+    }
+
     //修改个人信息
     public boolean modifyUser(User modifyUser) {
         try {

@@ -15,6 +15,10 @@ public class UserService {
         return userRepository.selectUserById(userId);
     }
 
+    public User getUserByName(String userName) {
+        return userRepository.selectUserByName(userName);
+    }
+
     //修改个人信息
     public boolean modifyUser(User user) {
         return userRepository.modifyUser(user);

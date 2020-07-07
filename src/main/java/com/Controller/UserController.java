@@ -36,23 +36,22 @@ public class UserController {
         session.setAttribute("loginUser", loginUser);
         //---------------------------------------------------------------------------------
         String msg = "";
-        User oldUser = userService.getUserById(modifyUser.getUserId());
+        User bfUser = userService.getUserById(modifyUser.getUserId());
         //判断用户Id是否存在
-        if (oldUser != null) {
-            //非空，判断用户名是否已存在
-            if(modifyUser.getUserName() != null) {
+        if (bfUser != null) {
+            //判断用户名是否已存在
+            if(userService.getUserByName(modifyUser.getUserName()) != null) {
                 msg += "用户名已被占用，信息修改失败！";
             } else {
                 //删除旧头像
-                toolService.deleteFile(oldUser.getUserIcon());
-                //修改信息
+                toolService.deleteFile(bfUser.getUserIcon());
                 modifyUser.setUserIcon(toolService.FileToURL(userImg, "user"));
                 userService.modifyUser(modifyUser);
                 msg += "信息修改成功！";
             }
             return msg;
         }
-        else return "信息修改失败！";
+        return "信息修改失败！";
     }
 
     //登录
@@ -70,9 +69,9 @@ public class UserController {
         if (user_find != null) {
             session.setAttribute("loginUser", user_find);
             User user =  (User)session.getAttribute("loginUser");
-            mav.setViewName("redirect:/User");
+            mav.setViewName("redirect:User");
         } else {
-            mav.setViewName("redirect:/User/login");
+            mav.setViewName("redirect:User/login");
         }
         return mav;
     }
