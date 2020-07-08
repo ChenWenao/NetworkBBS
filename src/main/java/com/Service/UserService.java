@@ -11,22 +11,26 @@ public class UserService {
     private UserRepository userRepository;
 
     //用户查询
+    //userId
     public User getUserById(int userId) {
         return userRepository.selectUserById(userId);
     }
-
+    //userName
     public User getUserByName(String userName) {
         return userRepository.selectUserByName(userName);
     }
 
     //修改个人信息
-    public boolean modifyUser(User user) {
-        return userRepository.modifyUser(user);
-    }
+    public boolean modifyUser(User user) { return userRepository.modifyUser(user); }
 
     //注册
     public boolean addNewUser(User newUser) {
         return userRepository.insertUser(newUser);
+    }
+
+    //注销
+    public boolean removeUser(int userId) {
+        return userRepository.deleteUser(userId);
     }
 
     //登录

@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 @RestController
 public class UserController {
@@ -25,6 +28,12 @@ public class UserController {
     @GetMapping("User/userById/{userId}")
     public User getUserById(@PathVariable("userId") int userId) {
         return userService.getUserById(userId);
+    }
+
+    //通过name查询用户信息，需传入userName
+    @GetMapping("User/userByName/{userName}")
+    public User getUserByName(@PathVariable("userName") String userName) {
+        return userService.getUserByName(userName);
     }
 
     //修改个人信息
@@ -51,7 +60,43 @@ public class UserController {
     }
 
     //注册
+    //传入newUser和头像，包含userName、userPassword、userPhoneNumber、userSecurityCode、userLevel
+    @PostMapping("User/newUser")
+    public String addNewUser(@RequestParam("userImg") MultipartFile userImg, @ModelAttribute(value = "newUser") User newUser) {
+        //生成账号
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        String code = formatter.format(new Date(System.currentTimeMillis()));//code开头为日期
+        code += newUser.getUserPhoneNumber().substring(newUser.getUserPhoneNumber().length() - 8);//code接下来为手机号后八位
+        //管理员尾数为0，用户尾数为1
+        if ("0".equals(newUser.getUserLevel()))
+            code += "0";
+        else
+            code += "1";
+        newUser.setUserCode(code);
+        //判断用户名是否已存在
+        if(userService.getUserByName(newUser.getUserName()) != null) {
+                return "用户名已被占用，注册失败！";
+        } else {
+            newUser.setUserIcon(toolService.FileToURL(userImg, "user"));
+            if (userService.addNewUser(newUser)) {
+                return "用户注册成功！";
+            } else {
+                userService.removeUser(newUser.getUserId());
+            }
+        }
+        return "注册失败！";
+    }
 
+    //注销用户，需传入userId
+    @PostMapping("User/logoutUser")
+    public boolean logoutUser(@RequestBody List<Integer> userIds) {
+        for (int userId : userIds) {
+            if (!userService.removeUser(userId)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     //登录
     //传入userCode,userPassword
