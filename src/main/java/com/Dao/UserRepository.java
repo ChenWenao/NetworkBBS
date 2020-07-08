@@ -40,15 +40,11 @@ public class UserRepository {
         try {
             template.update("update User set userName=?," +
                             "userIcon=?," +
-                            "userPassword=?," +
-                            "userPhoneNumber=?," +
-                            "userSecurityCode=? " +
+                            "userPhoneNumber=? " +
                             "where userId=?"
                     , modifyUser.getUserName()
                     , modifyUser.getUserIcon()
-                    , modifyUser.getUserPassword()
                     , modifyUser.getUserPhoneNumber()
-                    , modifyUser.getUserSecurityCode()
                     , modifyUser.getUserId()
             );
             return true;
@@ -56,6 +52,35 @@ public class UserRepository {
             System.out.println(e);
         }
         return false;
+    }
+
+    //修改密码
+    public boolean modifyPassword(User modifyUser) {
+        try {
+            template.update("update User set " +
+                            "userPassword=? " +
+                            "where userCode=? "
+                    , modifyUser.getUserPassword()
+                    , modifyUser.getUserCode());
+            return true;
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return false;
+    }
+
+    //找回密码
+    public User findResetUser(String userCode, String userSecurityCode) {
+        try {
+            List<User> users = template.query("select * from User where userCode =? and userSecurityCode=?"
+                    , userRowMapper
+                    , userCode
+                    , userSecurityCode);
+            return users.get(0);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
     }
 
     //注册

@@ -24,6 +24,26 @@ public class UserController {
     private UserService userService;
     private ToolService toolService = new ToolService();
 
+    //返回登陆页面
+    @GetMapping("/User/login")
+    public ModelAndView login() {
+        ModelAndView mav = new ModelAndView("login.html");
+        return mav;
+    }
+
+    //返回找回密码验证页面
+    @GetMapping("User/authentication")
+    public ModelAndView authentication() {
+        ModelAndView mav = new ModelAndView("authentication");
+        return mav;
+    }
+
+    @GetMapping("/User/resetPassword")
+    public ModelAndView getPage(){
+        ModelAndView mav = new ModelAndView("resetpassword");
+        return mav;
+    }
+
     //通过id查询用户信息，需传入userId
     @GetMapping("User/userById/{userId}")
     public User getUserById(@PathVariable("userId") int userId) {
@@ -37,7 +57,7 @@ public class UserController {
     }
 
     //修改个人信息
-    //传入modifyUser和头像，包含userId、userName、userPassword、userPhoneNumber、userSecurityCode
+    //传入modifyUser和头像，包含userId、userName、userPhoneNumber
     @PostMapping("User/modifyUser")
     public String modifyUser(HttpSession session, @RequestParam("userImg") MultipartFile userImg, @ModelAttribute(value = "modifyUser") User modifyUser) {
         String msg = "";
@@ -57,6 +77,37 @@ public class UserController {
             return msg;
         }
         return "信息修改失败！";
+    }
+
+    //找回密码验证，验证要修改密码的人的身份，验证成功会跳转到修改密码的页面，失败则会返回一个新的找回密码验证页面。
+    //传入resetUser，包含字userCode、userSecurityCode
+    @PostMapping("/User/resetPasswordCheck")
+    public boolean resetPasswordCheck(HttpSession session, @ModelAttribute(value = "resetUser") User resetUser) {
+        User user_find = userService.resetPasswordCheck(resetUser.getUserCode(), resetUser.getUserSecurityCode());
+        if (user_find != null) {
+            session.setAttribute("resetUser", user_find);
+            return true;
+        }
+        return false;
+    }
+
+    //重置密码,传入newPassword
+    @PostMapping("User/resetPassword")
+    public boolean resetPassword(HttpSession session, @ModelAttribute(value = "newPassword") String newPassword) throws NoSuchAlgorithmException {
+        //拿到前面验证时添加的用户
+        ModelAndView mav = new ModelAndView();
+        User resetUser = (User) session.getAttribute("resetUser");
+        //拿完用户后关闭session
+        session.removeAttribute("resetUser");
+        MessageDigest md5 = MessageDigest.getInstance("MD5");
+        md5.update(newPassword.getBytes());
+        String newPassword_MD5 = new BigInteger(1, md5.digest()).toString(16);
+        resetUser.setUserPassword(newPassword_MD5);
+        if (userService.modifyPassword(resetUser)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     //注册
@@ -87,19 +138,20 @@ public class UserController {
         return "注册失败！";
     }
 
-    //注销用户，需传入userId
+    //注销用户
+    //传入logoutUser，包含userId、userSecurityCode
     @PostMapping("User/logoutUser")
-    public boolean logoutUser(@RequestBody List<Integer> userIds) {
-        for (int userId : userIds) {
-            if (!userService.removeUser(userId)) {
-                return false;
+    public boolean logoutUser(@ModelAttribute(value = "logoutUser") User logoutUser) {
+        if(logoutUser.getUserSecurityCode().equals(userService.getUserById(logoutUser.getUserId()).getUserSecurityCode())){
+            if (userService.removeUser(logoutUser.getUserId())) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     //登录
-    //传入userCode,userPassword
+    //传入loginUser，包含userCode,userPassword
     @PostMapping("User/login")
     public ModelAndView login(HttpSession session, @ModelAttribute(value = "loginUser") User loginUser) throws NoSuchAlgorithmException {
         ModelAndView mav = new ModelAndView();//新建要返回的页面。

@@ -23,6 +23,12 @@ public class UserService {
     //修改个人信息
     public boolean modifyUser(User user) { return userRepository.modifyUser(user); }
 
+    //修改密码
+    public boolean modifyPassword(User modifyUser) { return userRepository.modifyPassword(modifyUser); }
+
+    //找回密码
+    public User resetPasswordCheck(String userCode, String userSecurityCode) { return userRepository.findResetUser(userCode, userSecurityCode); }
+
     //注册
     public boolean addNewUser(User newUser) {
         return userRepository.insertUser(newUser);
@@ -34,7 +40,5 @@ public class UserService {
     }
 
     //登录
-    public User login(String userCode, String userPassword) {
-        return userRepository.findUser(userCode,userPassword);
-    }
+    public User login(String userCode, String userPassword) { return userRepository.findUser(userCode,userPassword); }
 }
