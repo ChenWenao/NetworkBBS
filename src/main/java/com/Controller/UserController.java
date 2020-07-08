@@ -117,9 +117,9 @@ public class UserController {
         //生成账号
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
         String code = formatter.format(new Date(System.currentTimeMillis()));//code开头为日期
-        code += newUser.getUserPhoneNumber().substring(newUser.getUserPhoneNumber().length() - 8);//code接下来为手机号后八位
+        code += newUser.getUserPhoneNumber().substring(newUser.getUserPhoneNumber().length() - 2);//code接下来手机号后2位
         //管理员尾数为0，用户尾数为1
-        if ("0".equals(newUser.getUserLevel()))
+        if (0 == newUser.getUserLevel())
             code += "0";
         else
             code += "1";

@@ -86,13 +86,14 @@ public class UserRepository {
     //注册
     public boolean insertUser(User newUser) {
         try {
-            template.update("insert into User(userName,userIcon,userPassword,userPhoneNumber,userSecurityCode,userLevel) values (?,?,?,?,?,?)"
+            template.update("insert into User(userName,userIcon,userPassword,userPhoneNumber,userSecurityCode,userLevel,userCode) values (?,?,?,?,?,?,?)"
                     , newUser.getUserName()
                     , newUser.getUserIcon()
                     , newUser.getUserPassword()
                     , newUser.getUserPhoneNumber()
                     , newUser.getUserSecurityCode()
                     , newUser.getUserLevel()
+                    , newUser.getUserCode()
             );
             return true;
         } catch (Exception e) {
