@@ -138,10 +138,10 @@ public class CommunityController {
     //param：用于搜索，表示搜索哪个字段
     //qw：用于搜索，搜索param的字段中包括value的结果。
     //若param和value都为“all”，表示不定向搜索。
-    //order_by：表示根据哪个字段排序。
-    //order：用于排序，为0表示正序，为1表示倒序。
-    //pageSize：表示分页页面大小。
-    //page：表示查询第几页的数据。
+    //order_by：表示根据哪个字段排序。默认为 communityHeat
+    //order：用于排序，为0表示正序，为1表示倒序。 默认为 正序
+    //pageSize：表示分页页面大小。 默认为 5
+    //page：表示查询第几页的数据。 默认为 1
     //若pageSize和page都为0，则不分页，返回所有数据。
     @GetMapping("Communities/search")
     public List<Community> searchCommunities(@RequestParam(name = "param",defaultValue = "communityName") String param, @RequestParam("qw") String value, @RequestParam(name="order_by",defaultValue = "communityHeat") String order_by, @RequestParam(name="order",defaultValue = "0") int order, @RequestParam(name="pageSize",defaultValue = "5") int pageSize, @RequestParam(name="page",defaultValue = "1") int page) {

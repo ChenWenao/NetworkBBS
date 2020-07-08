@@ -102,6 +102,14 @@ public class CommunityRepository {
     }
 
     //多查询
+    //param：用于搜索，表示搜索哪个字段
+    //qw：用于搜索，搜索param的字段中包括value的结果。
+    //若param和value都为“all”，表示不定向搜索。
+    //order_by：表示根据哪个字段排序。默认为 communityHeat
+    //order：用于排序，为0表示正序，为1表示倒序。 默认为 正序
+    //pageSize：表示分页页面大小。 默认为 5
+    //page：表示查询第几页的数据。 默认为 1
+    //若pageSize和page都为0，则不分页，返回所有数据。
     public List<Community> selectCommunities(String param, String value, String order_by, int order, int pageSize, int page) {
         try {
             String sql = "select * from community,user where userId = communityOwnerId ";

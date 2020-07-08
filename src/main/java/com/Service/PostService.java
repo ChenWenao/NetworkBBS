@@ -5,6 +5,8 @@ import com.Dao.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class PostService {
     @Autowired
@@ -27,6 +29,9 @@ public class PostService {
         return postRepository.selectPostById(postId);
     }
 
+    public List<Post> getPosts(String param,int ownerId,String value,String order_by,int order,int pageSize,int page){
+        return postRepository.selectPosts(param, ownerId, value, order_by, order, pageSize, page);
+    }
 
 
 }
