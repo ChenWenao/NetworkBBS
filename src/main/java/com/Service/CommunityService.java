@@ -40,7 +40,11 @@ public class CommunityService {
         return communityRepository.selectCommunityById(communityId);
     }
 
-    public List<Community> getCommunities(String param,String value,String order_by,int order,int pageSize,int page){
-        return communityRepository.selectCommunities(param, value, order_by, order, pageSize, page);
+    public List<Community> getCommunities(String param,int ownerId,String value,String order_by,int order,int pageSize,int page){
+        return communityRepository.selectCommunities(param,ownerId, value, order_by, order, pageSize, page);
+    }
+
+    public List<Community> getCollectCommunities(int collectorId){
+        return communityRepository.selectCollectCommunities(collectorId);
     }
 }

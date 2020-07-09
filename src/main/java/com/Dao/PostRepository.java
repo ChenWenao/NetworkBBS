@@ -34,6 +34,7 @@ public class PostRepository {
     //删
     public boolean deletePost(int postId, int postComId) {
         try {
+            template.update("delete from comment where commentPostId =?", postId);
             template.update("delete from post where postId=?", postId);
             template.update("update community set communitySize=communitySize-1 where communityId=?", postComId);
             return true;
@@ -64,11 +65,11 @@ public class PostRepository {
     //pageSize：表示分页页面大小。 默认为 10
     //page：表示查询第几页的数据。 默认为 1
     //若pageSize和page都为0，则不分页，返回所有数据。
-    public List<Post> selectPosts(String param,int ownerId,String value,String order_by,int order,int pageSize,int page){
+    public List<Post> selectPosts(String param, int ownerId, String value, String order_by, int order, int pageSize, int page) {
         try {
             String sql = "select * from post,user,community where communityId=postComId and userId=postOwnerId ";
-            if(ownerId!=-1)
-                sql+=" and userId= "+ownerId;
+            if (ownerId != -1)
+                sql += " and userId= " + ownerId;
             if (param != "all" || value != "all")
                 sql += " and " + param + " like '%" + value + "%'";
             sql += " order by " + order_by;
