@@ -102,7 +102,21 @@ public class UserRepository {
         }
     }
 
-    //注销
+    //封禁
+    public boolean bannedUser(User bannedUser) {
+        try {
+            template.update("update User set isEnable=? where userId=?"
+                    , bannedUser.getIsEnable()
+                    , bannedUser.getUserId()
+            );
+            return true;
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return false;
+    }
+
+    //注销(个人)
     public boolean deleteUser(int userId) {
         try {
             //删除用户创建的帖子

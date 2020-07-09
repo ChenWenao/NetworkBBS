@@ -34,6 +34,11 @@ public class UserService {
         return userRepository.insertUser(newUser);
     }
 
+    //封禁
+    public boolean bannedUser(User bannedUser) {
+        return userRepository.bannedUser(bannedUser);
+    }
+
     //注销
     public boolean removeUser(int userId) {
         return userRepository.deleteUser(userId);

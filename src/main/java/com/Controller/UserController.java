@@ -138,7 +138,27 @@ public class UserController {
         return "注册失败！";
     }
 
-    //注销用户
+    //封禁用户(管理员)
+    //传入bannedUser，包含userCode,userPassword,userId
+    @PostMapping("User/bannedUser")
+    public boolean bannedUser(@ModelAttribute(value = "bannedUser") User bannedUser) throws NoSuchAlgorithmException {
+        MessageDigest md5 = MessageDigest.getInstance("MD5");
+        md5.update(bannedUser.getUserPassword().getBytes());
+        String password_MD5 = new BigInteger(1, md5.digest()).toString(16);
+        bannedUser.setUserPassword(password_MD5);
+        //验证登录
+        User user_find = userService.login(bannedUser.getUserCode(), bannedUser.getUserPassword());
+        if (user_find != null) {
+            if (0 == bannedUser.getUserLevel()){
+                if(userService.bannedUser(bannedUser)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    //注销用户(个人)
     //传入logoutUser，包含userId、userSecurityCode
     @PostMapping("User/logoutUser")
     public boolean logoutUser(@ModelAttribute(value = "logoutUser") User logoutUser) {
@@ -163,9 +183,11 @@ public class UserController {
         //验证登录
         User user_find = userService.login(loginUser.getUserCode(), loginUser.getUserPassword());
         if (user_find != null) {
-            session.setAttribute("loginUser", user_find);
-            User user =  (User)session.getAttribute("loginUser");
-            mav.setViewName("redirect:User");
+            if(1 == user_find.getIsEnable()) {
+                session.setAttribute("loginUser", user_find);
+                User user = (User) session.getAttribute("loginUser");
+                mav.setViewName("redirect:User");
+            }
         } else {
             mav.setViewName("redirect:User/login");
         }

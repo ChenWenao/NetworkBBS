@@ -12,6 +12,7 @@ public class User {
     private String userSecurityCode;
     private Date userRegistrationTime;
     private int userLevel;
+    private int isEnable;
 
     public int getUserId() {
         return userId;
@@ -83,5 +84,13 @@ public class User {
 
     public void setUserLevel(int userLevel) {
         this.userLevel = userLevel;
+    }
+
+    public int getIsEnable() {
+        return isEnable;
+    }
+
+    public void setIsEnable(int isEnable) {
+        this.isEnable = isEnable;
     }
 }
