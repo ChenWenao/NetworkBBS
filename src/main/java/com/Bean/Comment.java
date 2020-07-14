@@ -7,19 +7,21 @@ public class Comment {
     private String commentContent;
     private int commentPostId;
     private int commentOwnerId;
-    private int commentReplyId;
+    private String commentOwnerName;
     private String commentReplyName;
     private String commentReplyContent;
     private Date commentTime;
     private boolean commentRead;
 
-    public int getCommentReplyId() {
-        return commentReplyId;
+
+    public String getCommentOwnerName() {
+        return commentOwnerName;
     }
 
-    public void setCommentReplyId(int commentReplyId) {
-        this.commentReplyId = commentReplyId;
+    public void setCommentOwnerName(String commentOwnerName) {
+        this.commentOwnerName = commentOwnerName;
     }
+
 
     public int getCommentId() {
         return commentId;

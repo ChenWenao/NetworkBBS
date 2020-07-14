@@ -116,7 +116,7 @@ public class CommunityRepository {
         try {
             String sql = "select * from community,user where userId = communityOwnerId ";
             if (ownerId != -1)
-                sql += " and userId= " + ownerId;
+                sql += " and userId = " + ownerId;
             if (param != "all" || value != "all")
                 sql += " and " + param + " like '%" + value + "%'";
             sql += " order by " + order_by;
