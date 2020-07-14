@@ -119,6 +119,10 @@ public class UserRepository {
     //注销(个人)
     public boolean deleteUser(int userId) {
         try {
+            //删除二级评论
+            template.update("delete from Comment where ");
+            //删除用户的评论
+            template.update("delete from Comment where commentOwnerId=?", userId);
             //删除用户创建的帖子
             template.update("delete from Post where postOwnerId=?", userId);
             //删除用户创建的吧
