@@ -86,7 +86,7 @@ public class UserRepository {
     //注册
     public boolean insertUser(User newUser) {
         try {
-            template.update("insert into User(userName,userIcon,userPassword,userPhoneNumber,userSecurityCode,userLevel,userCode) values (?,?,?,?,?,?,?)"
+            template.update("insert into User(userName,userIcon,userPassword,userPhoneNumber,userSecurityCode,userLevel,userCode,isEnable) values (?,?,?,?,?,?,?,1)"
                     , newUser.getUserName()
                     , newUser.getUserIcon()
                     , newUser.getUserPassword()
@@ -120,7 +120,7 @@ public class UserRepository {
     public boolean deleteUser(int userId) {
         try {
             //删除回复该用户的评论
-            template.update("delete from Comment where commentId in (select commentOwnerId from User,Comment where commentReplyName=userName and userId=?)", userId);
+            //template.update("delete from Comment where commentId in (select commentOwnerId from User,Comment where commentReplyName=userName and userId=?)", userId);
             //删除用户的评论
             template.update("delete from Comment where commentOwnerId=?", userId);
             //删除用户创建的帖子
