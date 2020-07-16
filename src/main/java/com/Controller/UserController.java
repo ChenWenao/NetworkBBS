@@ -160,7 +160,7 @@ public class UserController {
     }
 
     //注销用户(个人)
-    //传入表单logoutUser,包含userId、userSecurityCode
+    //传入表单logoutUser,表单包含userId、userSecurityCode
     @PostMapping("User/logoutUser")
     public boolean logoutUser(@ModelAttribute(value = "logoutUser") User logoutUser) {
         //安全验证，判断安全码与账号是否匹配
