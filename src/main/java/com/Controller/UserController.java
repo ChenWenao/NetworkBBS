@@ -64,15 +64,15 @@ public class UserController {
         User bfUser = userService.getUserById(modifyUser.getUserId());
         //判断用户Id是否存在
         if (bfUser != null) {
-            //判断用户名是否已存在
-            if(userService.getUserByName(modifyUser.getUserName()) != null) {
-                msg += "用户名已被占用，信息修改失败！";
-            } else {
+            //判断用户名是否已存在或不改变用户名只改其它信息
+            if(userService.getUserByName(modifyUser.getUserName()) == null || userService.getUserById(modifyUser.getUserId()).getUserName() == modifyUser.getUserName()) {
                 //删除旧头像
                 toolService.deleteFile(bfUser.getUserIcon());
                 modifyUser.setUserIcon(toolService.FileToURL(userImg, "user"));
                 userService.modifyUser(modifyUser);
                 msg += "信息修改成功！";
+            } else {
+                msg += "用户名已被占用，信息修改失败！";
             }
             return msg;
         }
