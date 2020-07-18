@@ -21,7 +21,7 @@ public class PostController {
     //表单要求包括字段：postTitle，postContent，postComId
     //处理逻辑，当前登录的用户在postComId吧发布一条帖子
     @PostMapping("Post/newPost")
-    public boolean newPost(HttpSession session, @ModelAttribute(value = "newPost")Post newPost){
+    public boolean newPost(HttpSession session, @ModelAttribute(value = "newPost") Post newPost) {
 
         //-----------------------------暂时新添的Session-------------------------------------
         User loginUser = new User();
@@ -29,7 +29,7 @@ public class PostController {
         session.setAttribute("loginUser", loginUser);
         //---------------------------------------------------------------------------------
 
-        return postService.addNewPost(newPost.getPostTitle(),newPost.getPostContent(),((User) session.getAttribute("loginUser")).getUserId(),newPost.getPostComId());
+        return postService.addNewPost(newPost.getPostTitle(), newPost.getPostContent(), ((User) session.getAttribute("loginUser")).getUserId(), newPost.getPostComId());
     }
 
     //删帖
@@ -37,7 +37,7 @@ public class PostController {
     //调用该接口时，后台会做身份核验，若登录的用户不是贴主，或者用户不是管理员，则会返回false
     //需要传入的值：postId
     @GetMapping("Post/dropPost/{postId}")
-    public boolean dropPost(HttpSession session, @PathVariable("postId")int postId){
+    public boolean dropPost(HttpSession session, @PathVariable("postId") int postId) {
 
         //-----------------------------暂时新添的Session-------------------------------------
         User loginUser = new User();
@@ -47,12 +47,12 @@ public class PostController {
         //---------------------------------------------------------------------------------
 
 
-        Post post_del=postService.getPostById(postId);
-        if (post_del==null)
+        Post post_del = postService.getPostById(postId);
+        if (post_del == null)
             return false;
-        if(post_del.getPostOwnerId()==((User) session.getAttribute("loginUser")).getUserId()||((User) session.getAttribute("loginUser")).getUserLevel()==0){
-            return postService.removePost(post_del.getPostId(),post_del.getPostComId());
-        }else {
+        if (post_del.getPostOwnerId() == ((User) session.getAttribute("loginUser")).getUserId() || ((User) session.getAttribute("loginUser")).getUserLevel() == 0) {
+            return postService.removePost(post_del.getPostId(), post_del.getPostComId());
+        } else {
             return false;
         }
     }
@@ -68,7 +68,7 @@ public class PostController {
     //page：表示查询第几页的数据。 默认为 1
     //若pageSize和page都为0，则不分页，返回所有数据。
     @GetMapping("Post/search")
-    public List<Post> searchPosts(HttpSession session,@RequestParam(name = "param",defaultValue = "communityName") String param,@RequestParam(value = "ownerId",defaultValue = "-1")int ownerId, @RequestParam("qw") String value, @RequestParam(name="order_by",defaultValue = "communityHeat") String order_by, @RequestParam(name="order",defaultValue = "0") int order, @RequestParam(name="pageSize",defaultValue = "5") int pageSize, @RequestParam(name="page",defaultValue = "1") int page){
+    public List<Post> searchPosts(HttpSession session, @RequestParam(name = "param", defaultValue = "communityName") String param, @RequestParam(value = "ownerId", defaultValue = "-1") int ownerId, @RequestParam("qw") String value, @RequestParam(name = "order_by", defaultValue = "communityHeat") String order_by, @RequestParam(name = "order", defaultValue = "0") int order, @RequestParam(name = "pageSize", defaultValue = "5") int pageSize, @RequestParam(name = "page", defaultValue = "1") int page) {
         //-----------------------------暂时新添的Session-------------------------------------
         User loginUser = new User();
         loginUser.setUserId(1);
@@ -77,7 +77,7 @@ public class PostController {
         //---------------------------------------------------------------------------------
 
 
-        if(ownerId==0)
+        if (ownerId == 0)
             return postService.getPosts(param, ((User) session.getAttribute("loginUser")).getUserId(), value, order_by, order, pageSize, page);
         else
             return postService.getPosts(param, ownerId, value, order_by, order, pageSize, page);

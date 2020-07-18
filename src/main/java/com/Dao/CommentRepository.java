@@ -34,7 +34,7 @@ public class CommentRepository {
     //回复
     public boolean insertReply(Comment comment) {
         try {
-            template.update("insert into comment(commentContent,commentPostId,commentOwnerId,commentReplyName,commentReplyContent) values (?,?,?)",
+            template.update("insert into comment(commentContent,commentPostId,commentOwnerId,commentReplyName,commentReplyContent) values (?,?,?,?,?)",
                     comment.getCommentContent(),
                     comment.getCommentPostId(),
                     comment.getCommentOwnerId(),
@@ -51,10 +51,10 @@ public class CommentRepository {
     //删
     public boolean deleteComment(int commentId) {
         try {
-            template.update("update post set postReplies=postReplies-1 where postId in (select commentPostId from comment where commentId=?)",commentId);
-            template.update("delete from comment where commentId=?",commentId);
+            template.update("update post set postReplies=postReplies-1 where postId in (select commentPostId from comment where commentId=?)", commentId);
+            template.update("delete from comment where commentId=?", commentId);
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e);
         }
         return false;
@@ -62,11 +62,37 @@ public class CommentRepository {
 
 
     //查
-    public Comment selectCommentById(int commentId){
+    public Comment selectCommentById(int commentId) {
         try {
-            List<Comment> comments=template.query("select * from comment,user where userId=commentOwnerId and commentId=?",commentRowMapper,commentId);
+            List<Comment> comments = template.query("select * from comment,user " +
+                    "where userId=commentOwnerId and commentId=?", commentRowMapper, commentId);
             return comments.get(0);
-        }catch (Exception e){
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
+    }
+
+    public List<Comment> selectCommentsByPostId(int postId) {
+        try {
+            List<Comment> comments = template.query("select * from comment,user " +
+                    "where userId=commentOwnerId and commentPostId=?", commentRowMapper, postId);
+            return comments;
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
+    }
+
+    public List<Comment> selectMyComments(int read, int userId) {
+        try {
+            String sql = "select * from comment,user where commentOwnerId=userId and userId = ?";
+            if (read == 0)
+                sql += " and commentRead = false";
+            else if (read == 1)
+                sql += " and commentRead=true";
+            List<Comment> comments = template.query(sql, commentRowMapper, userId);
+        } catch (Exception e) {
             System.out.println(e);
         }
         return null;
