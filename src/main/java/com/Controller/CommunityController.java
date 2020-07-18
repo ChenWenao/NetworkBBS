@@ -91,7 +91,7 @@ public class CommunityController {
         //---------------------------------------------------------------------------------
 
         Community community = communityService.getCommunityById(communityId);
-        if(community==null)
+        if (community == null)
             return false;
         if (community.getCommunityOwnerId() == ((User) session.getAttribute("loginUser")).getUserId() || ((User) session.getAttribute("loginUser")).getUserLevel() == 0) {
             toolService.deleteFile(community.getCommunityIcon());
@@ -145,36 +145,36 @@ public class CommunityController {
     //若pageSize和page都为0，则不分页，返回所有数据。
 
     @GetMapping("Communities/search")
-    public List<Community> searchCommunities(HttpSession session,@RequestParam(name = "param",defaultValue = "communityName") String param,@RequestParam(name="ownerId",defaultValue = "-1")int ownerId, @RequestParam("qw") String value, @RequestParam(name="order_by",defaultValue = "communityHeat") String order_by, @RequestParam(name="order",defaultValue = "0") int order, @RequestParam(name="pageSize",defaultValue = "5") int pageSize, @RequestParam(name="page",defaultValue = "1") int page) {
+    public List<Community> searchCommunities(HttpSession session, @RequestParam(name = "param", defaultValue = "communityName") String param, @RequestParam(name = "ownerId", defaultValue = "-1") int ownerId, @RequestParam("qw") String value, @RequestParam(name = "order_by", defaultValue = "communityHeat") String order_by, @RequestParam(name = "order", defaultValue = "0") int order, @RequestParam(name = "pageSize", defaultValue = "5") int pageSize, @RequestParam(name = "page", defaultValue = "1") int page) {
         //-----------------------------暂时新添的Session-------------------------------------
         User loginUser = new User();
         loginUser.setUserId(1);
         loginUser.setUserLevel(0);
         session.setAttribute("loginUser", loginUser);
         //---------------------------------------------------------------------------------
-        if(ownerId==0)
-            ownerId=((User)session.getAttribute("loginUser")).getUserId();
-        return communityService.getCommunities(param, ownerId,value, order_by, order, pageSize, page);
+        if (ownerId == 0)
+            ownerId = ((User) session.getAttribute("loginUser")).getUserId();
+        return communityService.getCommunities(param, ownerId, value, order_by, order, pageSize, page);
     }
 
     //获取推荐吧
     @GetMapping("/forum/day_rcmd")
-    public List<Community> communitiesRcmd(){
-        return communityService.getCommunities("all",-1,"all","communityHeat",0,3,1);
+    public List<Community> communitiesRcmd() {
+        return communityService.getCommunities("all", -1, "all", "communityHeat", 0, 3, 1);
     }
 
     //获取某个用户自己关注的吧
     //传入用户id，若传入0，则表示获取自己关注的吧
     @GetMapping("Communities/{collectorId}")
-    public List<Community> getCollectCommunities(HttpSession session,@PathVariable("collectorId")int collectorId){
+    public List<Community> getCollectCommunities(HttpSession session, @PathVariable("collectorId") int collectorId) {
         //-----------------------------暂时新添的Session-------------------------------------
         User loginUser = new User();
         loginUser.setUserId(1);
         loginUser.setUserLevel(0);
         session.setAttribute("loginUser", loginUser);
         //---------------------------------------------------------------------------------
-        if(collectorId==0)
-            return communityService.getCollectCommunities(((User)session.getAttribute("loginUser")).getUserId());
+        if (collectorId == 0)
+            return communityService.getCollectCommunities(((User) session.getAttribute("loginUser")).getUserId());
         return communityService.getCollectCommunities(collectorId);
 
     }

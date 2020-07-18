@@ -8,8 +8,8 @@ import java.sql.SQLException;
 
 public class CommunityRowMapper implements RowMapper<Community> {
     @Override
-    public Community mapRow(ResultSet resultSet,int rowNum)throws SQLException{
-        Community community =new Community();
+    public Community mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+        Community community = new Community();
         community.setCommunityId(resultSet.getInt("communityId"));
         community.setCommunityName(resultSet.getString("communityName"));
         community.setCommunityIcon(resultSet.getString("communityIcon"));
