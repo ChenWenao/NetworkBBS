@@ -83,6 +83,4 @@ public class PostController {
             return postService.getPosts(param, ownerId, value, order_by, order, pageSize, page);
     }
 
-
-
 }

@@ -34,11 +34,33 @@ public class CommentController {
         loginUser.setUserName("陈文奥");
         session.setAttribute("loginUser", loginUser);
         //---------------------------------------------------------------------------------
+
+
         //设置ownerId
         newComment.setCommentOwnerId(((User)session.getAttribute("loginUser")).getUserId());
         return commentService.addNewComment(newComment);
     }
 
+    //删评
+
+    //删除评论，不会连带删除其他信息。
+    @GetMapping("Comment/deleteComment/{commentId}")
+    public boolean dropComment(HttpSession session,@PathVariable("commentId") int commentId){
+        //-----------------------------暂时新添的Session-------------------------------------
+        User loginUser = new User();
+        loginUser.setUserId(1);
+        loginUser.setUserLevel(0);
+        loginUser.setUserName("陈文奥");
+        session.setAttribute("loginUser", loginUser);
+        //---------------------------------------------------------------------------------
+
+        Comment ser_comment=commentService.getCommentById(commentId);
+
+        if (ser_comment.getCommentOwnerId() == ((User) session.getAttribute("loginUser")).getUserId() || ((User) session.getAttribute("loginUser")).getUserLevel() == 0) {
+            return commentService.dropComment(commentId);
+        }
+        return false;
+    }
 
 
 
