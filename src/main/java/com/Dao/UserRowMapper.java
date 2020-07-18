@@ -8,8 +8,8 @@ import java.sql.SQLException;
 
 public class UserRowMapper implements RowMapper<User> {
     @Override
-    public User mapRow(ResultSet resultSet,int rowNum)throws SQLException{
-        User user =new User();
+    public User mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+        User user = new User();
         user.setUserId(resultSet.getInt("userId"));
         user.setUserName(resultSet.getString("userName"));
         user.setUserIcon(resultSet.getString("userIcon"));

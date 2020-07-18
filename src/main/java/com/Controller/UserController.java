@@ -46,7 +46,7 @@ public class UserController {
         //判断用户Id是否存在
         if (bfUser != null) {
             //判断用户名是否已存在或不改变用户名只改其它信息
-            if(userService.getUserByName(modifyUser.getUserName()) == null || userService.getUserById(modifyUser.getUserId()).getUserName() == modifyUser.getUserName()) {
+            if (userService.getUserByName(modifyUser.getUserName()) == null || userService.getUserById(modifyUser.getUserId()).getUserName() == modifyUser.getUserName()) {
                 //删除旧头像
                 toolService.deleteFile(bfUser.getUserIcon());
                 modifyUser.setUserIcon(toolService.FileToURL(userImg, "user"));
@@ -106,8 +106,8 @@ public class UserController {
             code += "1";
         newUser.setUserCode(code);
         //判断用户名是否已存在
-        if(userService.getUserByName(newUser.getUserName()) != null) {
-                return "用户名已被占用，注册失败！";
+        if (userService.getUserByName(newUser.getUserName()) != null) {
+            return "用户名已被占用，注册失败！";
         } else {
             newUser.setUserIcon(toolService.FileToURL(userImg, "user"));
             if (userService.addNewUser(newUser)) {
@@ -131,8 +131,8 @@ public class UserController {
         User user_find = userService.login(bannedUser.getUserCode(), bannedUser.getUserPassword());
         if (user_find != null) {
             //身份验证
-            if (0 == bannedUser.getUserLevel()){
-                if(userService.bannedUser(bannedUser)) {
+            if (0 == bannedUser.getUserLevel()) {
+                if (userService.bannedUser(bannedUser)) {
                     return true;
                 }
             }
@@ -145,7 +145,7 @@ public class UserController {
     @PostMapping("User/logoutUser")
     public boolean logoutUser(@ModelAttribute(value = "logoutUser") User logoutUser) {
         //安全验证，判断安全码与账号是否匹配
-        if(logoutUser.getUserSecurityCode().equals(userService.getUserById(logoutUser.getUserId()).getUserSecurityCode())){
+        if (logoutUser.getUserSecurityCode().equals(userService.getUserById(logoutUser.getUserId()).getUserSecurityCode())) {
             if (userService.removeUser(logoutUser.getUserId())) {
                 return true;
             }
@@ -167,7 +167,7 @@ public class UserController {
         User user_find = userService.login(loginUser.getUserCode(), loginUser.getUserPassword());
         if (user_find != null) {
             //判断账户状态是否被封禁，isEnable为1表示正常，0表示被封禁
-            if(1 == user_find.getIsEnable()) {
+            if (1 == user_find.getIsEnable()) {
                 session.setAttribute("loginUser", user_find);
                 User user = (User) session.getAttribute("loginUser");
                 mav.setViewName("redirect:User");

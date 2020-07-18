@@ -11,7 +11,7 @@ import java.util.List;
 public class UserRepository {
     @Autowired
     private JdbcTemplate template;
-    private UserRowMapper userRowMapper=new UserRowMapper();
+    private UserRowMapper userRowMapper = new UserRowMapper();
 
     //用户查询
     //id
@@ -24,6 +24,7 @@ public class UserRepository {
         }
         return null;
     }
+
     //name
     public User selectUserByName(String userName) {
         try {
