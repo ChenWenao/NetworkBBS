@@ -19,6 +19,7 @@ public class UserRowMapper implements RowMapper<User> {
         user.setUserSecurityCode(resultSet.getString("userSecurityCode"));
         user.setUserRegistrationTime(resultSet.getTimestamp("userRegistrationTime"));
         user.setUserLevel(resultSet.getInt("userLevel"));
+        user.setIsEnable(resultSet.getInt("isEnable"));
         return user;
     }
 }

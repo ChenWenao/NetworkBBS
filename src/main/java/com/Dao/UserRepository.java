@@ -86,7 +86,7 @@ public class UserRepository {
     //注册
     public boolean insertUser(User newUser) {
         try {
-            template.update("insert into User(userName,userIcon,userPassword,userPhoneNumber,userSecurityCode,userLevel,userCode) values (?,?,?,?,?,?,?)"
+            template.update("insert into User(userName,userIcon,userPassword,userPhoneNumber,userSecurityCode,userLevel,userCode,isEnable) values (?,?,?,?,?,?,?,1)"
                     , newUser.getUserName()
                     , newUser.getUserIcon()
                     , newUser.getUserPassword()
@@ -102,9 +102,27 @@ public class UserRepository {
         }
     }
 
-    //注销
+    //封禁
+    public boolean bannedUser(User bannedUser) {
+        try {
+            template.update("update User set isEnable=? where userId=?"
+                    , bannedUser.getIsEnable()
+                    , bannedUser.getUserId()
+            );
+            return true;
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return false;
+    }
+
+    //注销(个人)
     public boolean deleteUser(int userId) {
         try {
+            //删除回复该用户的评论
+            //template.update("delete from Comment where commentId in (select commentOwnerId from User,Comment where commentReplyName=userName and userId=?)", userId);
+            //删除用户的评论
+            template.update("delete from Comment where commentOwnerId=?", userId);
             //删除用户创建的帖子
             template.update("delete from Post where postOwnerId=?", userId);
             //删除用户创建的吧

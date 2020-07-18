@@ -57,30 +57,30 @@ public class UserController {
     }
 
     //修改个人信息
-    //传入modifyUser和头像，包含userId、userName、userPhoneNumber
+    //传入头像userImg和表单modifyUser，表单包含userId、userName、userPhoneNumber
     @PostMapping("User/modifyUser")
     public String modifyUser(HttpSession session, @RequestParam("userImg") MultipartFile userImg, @ModelAttribute(value = "modifyUser") User modifyUser) {
         String msg = "";
         User bfUser = userService.getUserById(modifyUser.getUserId());
         //判断用户Id是否存在
         if (bfUser != null) {
-            //判断用户名是否已存在
-            if(userService.getUserByName(modifyUser.getUserName()) != null) {
-                msg += "用户名已被占用，信息修改失败！";
-            } else {
+            //判断用户名是否已存在或不改变用户名只改其它信息
+            if(userService.getUserByName(modifyUser.getUserName()) == null || userService.getUserById(modifyUser.getUserId()).getUserName() == modifyUser.getUserName()) {
                 //删除旧头像
                 toolService.deleteFile(bfUser.getUserIcon());
                 modifyUser.setUserIcon(toolService.FileToURL(userImg, "user"));
                 userService.modifyUser(modifyUser);
                 msg += "信息修改成功！";
+            } else {
+                msg += "用户名已被占用，信息修改失败！";
             }
             return msg;
         }
         return "信息修改失败！";
     }
 
-    //找回密码验证，验证要修改密码的人的身份，验证成功会跳转到修改密码的页面，失败则会返回一个新的找回密码验证页面。
-    //传入resetUser，包含字userCode、userSecurityCode
+    //找回密码验证，验证要修改密码的人的账号和安全码，验证成功会跳转到修改密码的页面，失败则会返回一个新的找回密码验证页面。
+    //传入表单resetUser，包含字userCode、userSecurityCode
     @PostMapping("/User/resetPasswordCheck")
     public boolean resetPasswordCheck(HttpSession session, @ModelAttribute(value = "resetUser") User resetUser) {
         User user_find = userService.resetPasswordCheck(resetUser.getUserCode(), resetUser.getUserSecurityCode());
@@ -111,7 +111,7 @@ public class UserController {
     }
 
     //注册
-    //传入newUser和头像，包含userName、userPassword、userPhoneNumber、userSecurityCode、userLevel
+    //传入头像userImg和表单newUser，表单包含userName、userPassword、userPhoneNumber、userSecurityCode、userLevel
     @PostMapping("User/newUser")
     public String addNewUser(@RequestParam("userImg") MultipartFile userImg, @ModelAttribute(value = "newUser") User newUser) {
         //生成账号
@@ -138,10 +138,32 @@ public class UserController {
         return "注册失败！";
     }
 
-    //注销用户
-    //传入logoutUser，包含userId、userSecurityCode
+    //封禁用户(管理员)
+    //传入表单bannedUser，表单包含userCode,userPassword,userId
+    @PostMapping("User/bannedUser")
+    public boolean bannedUser(@ModelAttribute(value = "bannedUser") User bannedUser) throws NoSuchAlgorithmException {
+        MessageDigest md5 = MessageDigest.getInstance("MD5");
+        md5.update(bannedUser.getUserPassword().getBytes());
+        String password_MD5 = new BigInteger(1, md5.digest()).toString(16);
+        bannedUser.setUserPassword(password_MD5);
+        //验证登录
+        User user_find = userService.login(bannedUser.getUserCode(), bannedUser.getUserPassword());
+        if (user_find != null) {
+            //身份验证
+            if (0 == bannedUser.getUserLevel()){
+                if(userService.bannedUser(bannedUser)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    //注销用户(个人)
+    //传入表单logoutUser,表单包含userId、userSecurityCode
     @PostMapping("User/logoutUser")
     public boolean logoutUser(@ModelAttribute(value = "logoutUser") User logoutUser) {
+        //安全验证，判断安全码与账号是否匹配
         if(logoutUser.getUserSecurityCode().equals(userService.getUserById(logoutUser.getUserId()).getUserSecurityCode())){
             if (userService.removeUser(logoutUser.getUserId())) {
                 return true;
@@ -151,7 +173,7 @@ public class UserController {
     }
 
     //登录
-    //传入loginUser，包含userCode,userPassword
+    //传入表单loginUser，包含userCode,userPassword
     @PostMapping("User/login")
     public ModelAndView login(HttpSession session, @ModelAttribute(value = "loginUser") User loginUser) throws NoSuchAlgorithmException {
         ModelAndView mav = new ModelAndView();//新建要返回的页面。
@@ -163,9 +185,12 @@ public class UserController {
         //验证登录
         User user_find = userService.login(loginUser.getUserCode(), loginUser.getUserPassword());
         if (user_find != null) {
-            session.setAttribute("loginUser", user_find);
-            User user =  (User)session.getAttribute("loginUser");
-            mav.setViewName("redirect:User");
+            //判断账户状态是否被封禁，isEnable为1表示正常，0表示被封禁
+            if(1 == user_find.getIsEnable()) {
+                session.setAttribute("loginUser", user_find);
+                User user = (User) session.getAttribute("loginUser");
+                mav.setViewName("redirect:User");
+            }
         } else {
             mav.setViewName("redirect:User/login");
         }
