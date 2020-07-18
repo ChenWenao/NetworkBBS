@@ -38,26 +38,34 @@ public class UserController {
     }
 
     //修改个人信息
-    //传入头像userImg和表单modifyUser，表单包含userId、userName、userPhoneNumber
+    //传入头像userImg和表单modifyUser，表单包含userName、userPhoneNumber
     @PostMapping("User/modifyUser")
     public String modifyUser(HttpSession session, @RequestParam("userImg") MultipartFile userImg, @ModelAttribute(value = "modifyUser") User modifyUser) {
         String msg = "";
-        User bfUser = userService.getUserById(modifyUser.getUserId());
-        //判断用户Id是否存在
+        User bfUser = userService.getUserByName(modifyUser.getUserName());
+        User lgUser = (User) session.getAttribute("loginUser");
+        //判断用户名是否存在
         if (bfUser != null) {
-            //判断用户名是否已存在或不改变用户名只改其它信息
-            if (userService.getUserByName(modifyUser.getUserName()) == null || userService.getUserById(modifyUser.getUserId()).getUserName() == modifyUser.getUserName()) {
+            //存在，判断用户Id是否相同(不改变用户名只改其它信息)
+            if (userService.getUserByName(modifyUser.getUserName()).getUserId() == lgUser.getUserId()) {
                 //删除旧头像
                 toolService.deleteFile(bfUser.getUserIcon());
                 modifyUser.setUserIcon(toolService.FileToURL(userImg, "user"));
+                modifyUser.setUserId(lgUser.getUserId());
                 userService.modifyUser(modifyUser);
                 msg += "信息修改成功！";
             } else {
                 msg += "用户名已被占用，信息修改失败！";
             }
-            return msg;
+        } else {
+            //不存在，直接修改信息
+            toolService.deleteFile(bfUser.getUserIcon());
+            modifyUser.setUserIcon(toolService.FileToURL(userImg, "user"));
+            modifyUser.setUserId(lgUser.getUserId());
+            userService.modifyUser(modifyUser);
+            msg += "信息修改成功！";
         }
-        return "信息修改失败！";
+        return msg;
     }
 
     //找回密码验证，验证要修改密码的人的账号和安全码，验证成功会跳转到修改密码的页面，失败则会返回一个新的找回密码验证页面。
