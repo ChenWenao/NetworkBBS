@@ -24,25 +24,6 @@ public class UserController {
     private UserService userService;
     private ToolService toolService = new ToolService();
 
-    //返回登陆页面
-    @GetMapping("/User/login")
-    public ModelAndView login() {
-        ModelAndView mav = new ModelAndView("login.html");
-        return mav;
-    }
-
-    //返回找回密码验证页面
-    @GetMapping("User/authentication")
-    public ModelAndView authentication() {
-        ModelAndView mav = new ModelAndView("authentication");
-        return mav;
-    }
-
-    @GetMapping("/User/resetPassword")
-    public ModelAndView getPage(){
-        ModelAndView mav = new ModelAndView("resetpassword");
-        return mav;
-    }
 
     //通过id查询用户信息，需传入userId
     @GetMapping("User/userById/{userId}")
