@@ -16,14 +16,14 @@ public class UserRepository {
     //注册
     public boolean insertUser(User newUser) {
         try {
-            template.update("insert into User(userName,userIcon,userPassword,userPhoneNumber,userSecurityCode,userLevel,userCode,isEnable) values (?,?,?,?,?,?,?,1)"
+            template.update("insert into User(userName,userIcon,userCode,userPassword,userPhoneNumber,userSecurityCode,userLevel,isEnable) values (?,?,?,?,?,?,?,1)"
                     , newUser.getUserName()
                     , newUser.getUserIcon()
+                    , newUser.getUserCode()
                     , newUser.getUserPassword()
                     , newUser.getUserPhoneNumber()
                     , newUser.getUserSecurityCode()
                     , newUser.getUserLevel()
-                    , newUser.getUserCode()
             );
             return true;
         } catch (Exception e) {
@@ -35,8 +35,6 @@ public class UserRepository {
     //注销
     public boolean deleteUser(int userId) {
         try {
-            //删除回复该用户的评论
-            template.update("delete from Comment where commentId in (select commentId from User,Comment where commentReplyName=userName and userId=?)", userId);
             //删除用户的评论
             template.update("delete from Comment where commentOwnerId=?", userId);
             //删除用户创建的帖子

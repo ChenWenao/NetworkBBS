@@ -60,9 +60,9 @@ public class UserController {
     }
 
     //注销用户(普通用户)
-    //传入userSecurityCode
-    @GetMapping("User/logoutUser/{userSecurityCode}")
-    public boolean logoutUser(HttpSession session, @PathVariable("userSecurityCode") String userSecurityCode) {
+    //传入表单userSecurityCode
+    @PostMapping("User/logoutUser")
+    public boolean logoutUser(HttpSession session, @ModelAttribute(value = "userSecurityCode") String userSecurityCode) {
         User logoutUser = (User) session.getAttribute("loginUser");
         //安全验证，判断安全码与账号是否匹配
         if (userSecurityCode.equals(logoutUser.getUserSecurityCode())) {
@@ -91,27 +91,34 @@ public class UserController {
     //传入头像userImg和表单modifyUser，表单包含userName、userPhoneNumber
     @PostMapping("User/modifyUser")
     public String modifyUser(HttpSession session, @RequestParam("userImg") MultipartFile userImg, @ModelAttribute(value = "modifyUser") User modifyUser) {
+        //-----------------------------暂时新添的Session-------------------------------------
+        User loginUser = new User();
+        loginUser.setUserId(13);
+        loginUser.setUserName("文奥");
+        session.setAttribute("loginUser", loginUser);
+        //---------------------------------------------------------------------------------
         String msg = "";
-        User bfUser = userService.getUserByName(modifyUser.getUserName());
         User lgUser = (User) session.getAttribute("loginUser");
         //判断用户名是否存在
-        if (bfUser != null) {
+        if (userService.getUserByName(modifyUser.getUserName()) != null) {
             //存在，判断用户Id是否相同(不改变用户名只改其它信息)
             if (userService.getUserByName(modifyUser.getUserName()).getUserId() == lgUser.getUserId()) {
+                //id相同
                 //删除旧头像
-                toolService.deleteFile(bfUser.getUserIcon());
+                toolService.deleteFile(userService.getUserByName(modifyUser.getUserName()).getUserIcon());
                 modifyUser.setUserIcon(toolService.FileToURL(userImg, "user"));
                 modifyUser.setUserId(lgUser.getUserId());
                 //修改信息
                 userService.modifyUser(modifyUser);
                 msg += "信息修改成功！";
             } else {
+                //id不同，用户名重复
                 msg += "用户名已被占用，信息修改失败！";
             }
         } else {
             //不存在，直接修改信息
             //删除旧头像
-            toolService.deleteFile(bfUser.getUserIcon());
+            toolService.deleteFile(userService.getUserByName(modifyUser.getUserName()).getUserIcon());
             modifyUser.setUserIcon(toolService.FileToURL(userImg, "user"));
             modifyUser.setUserId(lgUser.getUserId());
             //修改信息
@@ -121,7 +128,8 @@ public class UserController {
         return msg;
     }
 
-    //找回密码验证，成功会跳转到修改密码的页面，失败则会返回一个新的找回密码验证页面
+    //找回密码验证
+    //成功会跳转到修改密码的页面，失败则会返回一个新的找回密码验证页面
     //传入表单resetUser，包含userCode、userSecurityCode
     @PostMapping("User/resetPasswordCheck")
     public boolean resetPasswordCheck(HttpSession session, @ModelAttribute(value = "resetUser") User resetUser) {
@@ -135,19 +143,9 @@ public class UserController {
     }
 
     //重置密码
-    //传入newPassword
+    //传入表单newPassword
     @PostMapping("User/resetPassword")
     public boolean resetPassword(HttpSession session, @ModelAttribute(value = "newPassword") String newPassword) throws NoSuchAlgorithmException {
-        //-----------------------------暂时新添的Session-------------------------------------
-        User loginUser = new User();
-        loginUser.setUserId(11);
-        loginUser.setUserLevel(1);
-        loginUser.setUserName("陈文奥");
-        loginUser.setUserSecurityCode("54250");
-        loginUser.setUserPassword("54250");
-        loginUser.setUserCode("20200719011");
-        session.setAttribute("resetUser", loginUser);
-        //---------------------------------------------------------------------------------
         //拿到验证时添加的用户
         ModelAndView mav = new ModelAndView();
         User resetUser = (User) session.getAttribute("resetUser");
@@ -202,10 +200,10 @@ public class UserController {
             if (1 == user_find.getIsEnable()) {
                 session.setAttribute("loginUser", user_find);
                 User user = (User) session.getAttribute("loginUser");
-                mav.setViewName("redirect:User");
+                mav.setViewName("");
             }
         } else {
-            mav.setViewName("redirect:User/login");
+            mav.setViewName("");
         }
         return mav;
     }
