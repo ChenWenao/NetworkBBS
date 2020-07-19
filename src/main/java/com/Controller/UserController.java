@@ -54,6 +54,7 @@ public class UserController {
                 toolService.deleteFile(bfUser.getUserIcon());
                 modifyUser.setUserIcon(toolService.FileToURL(userImg, "user"));
                 modifyUser.setUserId(lgUser.getUserId());
+                //修改信息
                 userService.modifyUser(modifyUser);
                 msg += "信息修改成功！";
             } else {
@@ -61,20 +62,23 @@ public class UserController {
             }
         } else {
             //不存在，直接修改信息
+            //删除旧头像
             toolService.deleteFile(bfUser.getUserIcon());
             modifyUser.setUserIcon(toolService.FileToURL(userImg, "user"));
             modifyUser.setUserId(lgUser.getUserId());
+            //修改信息
             userService.modifyUser(modifyUser);
             msg += "信息修改成功！";
         }
         return msg;
     }
 
-    //找回密码验证，验证要修改密码的人的账号和安全码，验证成功会跳转到修改密码的页面，失败则会返回一个新的找回密码验证页面。
-    //传入表单resetUser，包含字userCode、userSecurityCode
-    @PostMapping("/User/resetPasswordCheck")
+    //找回密码验证，成功会跳转到修改密码的页面，失败则会返回一个新的找回密码验证页面
+    //传入表单resetUser，包含userCode、userSecurityCode
+    @PostMapping("User/resetPasswordCheck")
     public boolean resetPasswordCheck(HttpSession session, @ModelAttribute(value = "resetUser") User resetUser) {
         User user_find = userService.resetPasswordCheck(resetUser.getUserCode(), resetUser.getUserSecurityCode());
+        //验证要修改密码的账号与安全码
         if (user_find != null) {
             session.setAttribute("resetUser", user_find);
             return true;
@@ -86,7 +90,17 @@ public class UserController {
     //传入newPassword
     @PostMapping("User/resetPassword")
     public boolean resetPassword(HttpSession session, @ModelAttribute(value = "newPassword") String newPassword) throws NoSuchAlgorithmException {
-        //拿到前面验证时添加的用户
+        //-----------------------------暂时新添的Session-------------------------------------
+        User loginUser = new User();
+        loginUser.setUserId(11);
+        loginUser.setUserLevel(1);
+        loginUser.setUserName("陈文奥");
+        loginUser.setUserSecurityCode("54250");
+        loginUser.setUserPassword("54250");
+        loginUser.setUserCode("20200719011");
+        session.setAttribute("resetUser", loginUser);
+        //---------------------------------------------------------------------------------
+        //拿到验证时添加的用户
         ModelAndView mav = new ModelAndView();
         User resetUser = (User) session.getAttribute("resetUser");
         //拿完用户后关闭session
@@ -105,22 +119,29 @@ public class UserController {
     //注册
     //传入头像userImg和表单newUser，表单包含userName、userPassword、userPhoneNumber、userSecurityCode、userLevel
     @PostMapping("User/newUser")
-    public String addNewUser(@RequestParam("userImg") MultipartFile userImg, @ModelAttribute(value = "newUser") User newUser) {
-        //生成账号
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-        String code = formatter.format(new Date(System.currentTimeMillis()));//code开头为日期
-        code += newUser.getUserPhoneNumber().substring(newUser.getUserPhoneNumber().length() - 2);//code接下来手机号后2位
-        //管理员尾数为0，用户尾数为1
-        if (0 == newUser.getUserLevel())
-            code += "0";
-        else
-            code += "1";
-        newUser.setUserCode(code);
+    public String addNewUser(@RequestParam("userImg") MultipartFile userImg, @ModelAttribute(value = "newUser") User newUser) throws NoSuchAlgorithmException {
         //判断用户名是否已存在
         if (userService.getUserByName(newUser.getUserName()) != null) {
             return "用户名已被占用，注册失败！";
         } else {
+            //生成账号
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+            //code开头为日期
+            String code = formatter.format(new Date(System.currentTimeMillis()));
+            //接下来为手机号后2位
+            code += newUser.getUserPhoneNumber().substring(newUser.getUserPhoneNumber().length() - 2);
+            //管理员尾数为0，用户尾数为1
+            if (0 == newUser.getUserLevel())
+                code += "0";
+            else
+                code += "1";
+            newUser.setUserCode(code);
             newUser.setUserIcon(toolService.FileToURL(userImg, "user"));
+            //加密密码
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            md5.update(newUser.getUserPassword().getBytes());
+            String password_MD5 = new BigInteger(1, md5.digest()).toString(16);
+            newUser.setUserPassword(password_MD5);
             if (userService.addNewUser(newUser)) {
                 return "用户注册成功！";
             } else {

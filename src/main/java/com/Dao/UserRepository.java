@@ -60,9 +60,9 @@ public class UserRepository {
         try {
             template.update("update User set " +
                             "userPassword=? " +
-                            "where userCode=? "
+                            "where userId=? "
                     , modifyUser.getUserPassword()
-                    , modifyUser.getUserCode());
+                    , modifyUser.getUserId());
             return true;
         } catch (Exception e) {
             System.out.println(e);
@@ -87,10 +87,9 @@ public class UserRepository {
     //注册
     public boolean insertUser(User newUser) {
         try {
-            template.update("insert into User(userName,userIcon,userPassword,userPhoneNumber,userSecurityCode,userLevel,userCode,isEnable) values (?,?,?,?,?,?,?,1)"
+            template.update("insert into User(userName,userIcon,userPhoneNumber,userSecurityCode,userLevel,userCode,isEnable) values (?,?,?,?,?,?,1)"
                     , newUser.getUserName()
                     , newUser.getUserIcon()
-                    , newUser.getUserPassword()
                     , newUser.getUserPhoneNumber()
                     , newUser.getUserSecurityCode()
                     , newUser.getUserLevel()
