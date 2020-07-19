@@ -25,13 +25,15 @@ public class UserController {
     private ToolService toolService = new ToolService();
 
 
-    //通过id查询用户信息，需传入userId
+    //通过id查询用户信息
+    //传入userId
     @GetMapping("User/userById/{userId}")
     public User getUserById(@PathVariable("userId") int userId) {
         return userService.getUserById(userId);
     }
 
-    //通过name查询用户信息，需传入userName
+    //通过name查询用户信息
+    //传入userName
     @GetMapping("User/userByName/{userName}")
     public User getUserByName(@PathVariable("userName") String userName) {
         return userService.getUserByName(userName);
@@ -80,7 +82,8 @@ public class UserController {
         return false;
     }
 
-    //重置密码,传入newPassword
+    //重置密码
+    //传入newPassword
     @PostMapping("User/resetPassword")
     public boolean resetPassword(HttpSession session, @ModelAttribute(value = "newPassword") String newPassword) throws NoSuchAlgorithmException {
         //拿到前面验证时添加的用户
@@ -128,32 +131,26 @@ public class UserController {
     }
 
     //封禁用户(管理员)
-    //传入表单bannedUser，表单包含userCode,userPassword,userId
-    @PostMapping("User/bannedUser")
-    public boolean bannedUser(@ModelAttribute(value = "bannedUser") User bannedUser) throws NoSuchAlgorithmException {
-        MessageDigest md5 = MessageDigest.getInstance("MD5");
-        md5.update(bannedUser.getUserPassword().getBytes());
-        String password_MD5 = new BigInteger(1, md5.digest()).toString(16);
-        bannedUser.setUserPassword(password_MD5);
-        //验证登录
-        User user_find = userService.login(bannedUser.getUserCode(), bannedUser.getUserPassword());
-        if (user_find != null) {
-            //身份验证
-            if (0 == bannedUser.getUserLevel()) {
-                if (userService.bannedUser(bannedUser)) {
-                    return true;
-                }
+    //传入要封禁用户的userId
+    @GetMapping("User/bannedUser/{userId}")
+    public boolean bannedUser(HttpSession session, @PathVariable("userId") int userId) {
+        User adminUser = (User) session.getAttribute("loginUser");
+        //身份验证
+        if (0 == adminUser.getUserLevel()) {
+            if (userService.bannedUser(userId)) {
+                return true;
             }
         }
         return false;
     }
 
-    //注销用户(个人)
-    //传入表单logoutUser,表单包含userId、userSecurityCode
-    @PostMapping("User/logoutUser")
-    public boolean logoutUser(@ModelAttribute(value = "logoutUser") User logoutUser) {
+    //注销用户(普通用户)
+    //传入userSecurityCode
+    @GetMapping("User/logoutUser/{userSecurityCode}")
+    public boolean logoutUser(HttpSession session, @PathVariable("userSecurityCode") String userSecurityCode) {
+        User logoutUser = (User) session.getAttribute("loginUser");
         //安全验证，判断安全码与账号是否匹配
-        if (logoutUser.getUserSecurityCode().equals(userService.getUserById(logoutUser.getUserId()).getUserSecurityCode())) {
+        if (userSecurityCode.equals(logoutUser.getUserSecurityCode())) {
             if (userService.removeUser(logoutUser.getUserId())) {
                 return true;
             }

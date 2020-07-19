@@ -31,7 +31,7 @@ public class UserService {
         return userRepository.modifyPassword(modifyUser);
     }
 
-    //找回密码
+    //找回密码验证
     public User resetPasswordCheck(String userCode, String userSecurityCode) {
         return userRepository.findResetUser(userCode, userSecurityCode);
     }
@@ -42,8 +42,8 @@ public class UserService {
     }
 
     //封禁
-    public boolean bannedUser(User bannedUser) {
-        return userRepository.bannedUser(bannedUser);
+    public boolean bannedUser(int userId) {
+        return userRepository.bannedUser(userId);
     }
 
     //注销

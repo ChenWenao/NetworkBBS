@@ -70,7 +70,7 @@ public class UserRepository {
         return false;
     }
 
-    //找回密码
+    //找回密码验证
     public User findResetUser(String userCode, String userSecurityCode) {
         try {
             List<User> users = template.query("select * from User where userCode =? and userSecurityCode=?"
@@ -104,12 +104,9 @@ public class UserRepository {
     }
 
     //封禁
-    public boolean bannedUser(User bannedUser) {
+    public boolean bannedUser(int userId) {
         try {
-            template.update("update User set isEnable=? where userId=?"
-                    , bannedUser.getIsEnable()
-                    , bannedUser.getUserId()
-            );
+            template.update("update User set isEnable=0 where userId=?", userId);
             return true;
         } catch (Exception e) {
             System.out.println(e);
@@ -117,11 +114,11 @@ public class UserRepository {
         return false;
     }
 
-    //注销(个人)
+    //注销
     public boolean deleteUser(int userId) {
         try {
             //删除回复该用户的评论
-            //template.update("delete from Comment where commentId in (select commentOwnerId from User,Comment where commentReplyName=userName and userId=?)", userId);
+            template.update("delete from Comment where commentId in (select commentId from User,Comment where commentReplyName=userName and userId=?)", userId);
             //删除用户的评论
             template.update("delete from Comment where commentOwnerId=?", userId);
             //删除用户创建的帖子
