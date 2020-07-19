@@ -99,24 +99,8 @@ public class UserController {
         //---------------------------------------------------------------------------------
         String msg = "";
         User lgUser = (User) session.getAttribute("loginUser");
-        //判断用户名是否存在
-        if (userService.getUserByName(modifyUser.getUserName()) != null) {
-            //存在，判断用户Id是否相同(不改变用户名只改其它信息)
-            if (userService.getUserByName(modifyUser.getUserName()).getUserId() == lgUser.getUserId()) {
-                //id相同
-                //删除旧头像
-                toolService.deleteFile(userService.getUserByName(modifyUser.getUserName()).getUserIcon());
-                modifyUser.setUserIcon(toolService.FileToURL(userImg, "user"));
-                modifyUser.setUserId(lgUser.getUserId());
-                //修改信息
-                userService.modifyUser(modifyUser);
-                msg += "信息修改成功！";
-            } else {
-                //id不同，用户名重复
-                msg += "用户名已被占用，信息修改失败！";
-            }
-        } else {
-            //不存在，直接修改信息
+        //用户名不存在或存在但用户Id相同(不改变用户名只改其它信息)
+        if (userService.getUserByName(modifyUser.getUserName()) == null || userService.getUserByName(modifyUser.getUserName()).getUserId() == lgUser.getUserId()) {
             //删除旧头像
             toolService.deleteFile(userService.getUserByName(modifyUser.getUserName()).getUserIcon());
             modifyUser.setUserIcon(toolService.FileToURL(userImg, "user"));
@@ -124,6 +108,9 @@ public class UserController {
             //修改信息
             userService.modifyUser(modifyUser);
             msg += "信息修改成功！";
+        } else {
+            //用户名存在,且传入id与用户不同
+            msg += "用户名重复，信息修改失败！";
         }
         return msg;
     }
