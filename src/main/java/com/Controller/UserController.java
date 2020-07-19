@@ -24,19 +24,67 @@ public class UserController {
     private UserService userService;
     private ToolService toolService = new ToolService();
 
-
-    //通过id查询用户信息
-    //传入userId
-    @GetMapping("User/userById/{userId}")
-    public User getUserById(@PathVariable("userId") int userId) {
-        return userService.getUserById(userId);
+    //注册
+    //传入头像userImg和表单newUser，表单包含userName、userPassword、userPhoneNumber、userSecurityCode、userLevel
+    @PostMapping("User/newUser")
+    public String addNewUser(@RequestParam("userImg") MultipartFile userImg, @ModelAttribute(value = "newUser") User newUser) throws NoSuchAlgorithmException {
+        //判断用户名是否已存在
+        if (userService.getUserByName(newUser.getUserName()) != null) {
+            return "用户名已被占用，注册失败！";
+        } else {
+            //生成账号
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+            //code开头为日期
+            String code = formatter.format(new Date(System.currentTimeMillis()));
+            //接下来为手机号后2位
+            code += newUser.getUserPhoneNumber().substring(newUser.getUserPhoneNumber().length() - 2);
+            //管理员尾数为0，用户尾数为1
+            if (0 == newUser.getUserLevel())
+                code += "0";
+            else
+                code += "1";
+            newUser.setUserCode(code);
+            newUser.setUserIcon(toolService.FileToURL(userImg, "user"));
+            //加密密码
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            md5.update(newUser.getUserPassword().getBytes());
+            String password_MD5 = new BigInteger(1, md5.digest()).toString(16);
+            newUser.setUserPassword(password_MD5);
+            if (userService.addNewUser(newUser)) {
+                return "用户注册成功！";
+            } else {
+                userService.removeUser(newUser.getUserId());
+            }
+        }
+        return "注册失败！";
     }
 
-    //通过name查询用户信息
-    //传入userName
-    @GetMapping("User/userByName/{userName}")
-    public User getUserByName(@PathVariable("userName") String userName) {
-        return userService.getUserByName(userName);
+    //注销用户(普通用户)
+    //传入userSecurityCode
+    @GetMapping("User/logoutUser/{userSecurityCode}")
+    public boolean logoutUser(HttpSession session, @PathVariable("userSecurityCode") String userSecurityCode) {
+        User logoutUser = (User) session.getAttribute("loginUser");
+        //安全验证，判断安全码与账号是否匹配
+        if (userSecurityCode.equals(logoutUser.getUserSecurityCode())) {
+            if (userService.removeUser(logoutUser.getUserId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //封禁用户(管理员)
+    //传入要封禁用户的userId
+    @GetMapping("User/bannedUser/{userId}")
+    public boolean bannedUser(HttpSession session, @PathVariable("userId") int userId) {
+        User adminUser = (User) session.getAttribute("loginUser");
+        //身份验证
+        if (0 == adminUser.getUserLevel()) {
+            if (userService.bannedUser(userId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     //修改个人信息
@@ -116,67 +164,25 @@ public class UserController {
         }
     }
 
-    //注册
-    //传入头像userImg和表单newUser，表单包含userName、userPassword、userPhoneNumber、userSecurityCode、userLevel
-    @PostMapping("User/newUser")
-    public String addNewUser(@RequestParam("userImg") MultipartFile userImg, @ModelAttribute(value = "newUser") User newUser) throws NoSuchAlgorithmException {
-        //判断用户名是否已存在
-        if (userService.getUserByName(newUser.getUserName()) != null) {
-            return "用户名已被占用，注册失败！";
-        } else {
-            //生成账号
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-            //code开头为日期
-            String code = formatter.format(new Date(System.currentTimeMillis()));
-            //接下来为手机号后2位
-            code += newUser.getUserPhoneNumber().substring(newUser.getUserPhoneNumber().length() - 2);
-            //管理员尾数为0，用户尾数为1
-            if (0 == newUser.getUserLevel())
-                code += "0";
-            else
-                code += "1";
-            newUser.setUserCode(code);
-            newUser.setUserIcon(toolService.FileToURL(userImg, "user"));
-            //加密密码
-            MessageDigest md5 = MessageDigest.getInstance("MD5");
-            md5.update(newUser.getUserPassword().getBytes());
-            String password_MD5 = new BigInteger(1, md5.digest()).toString(16);
-            newUser.setUserPassword(password_MD5);
-            if (userService.addNewUser(newUser)) {
-                return "用户注册成功！";
-            } else {
-                userService.removeUser(newUser.getUserId());
-            }
-        }
-        return "注册失败！";
+    //通过id查询用户信息
+    //传入userId
+    @GetMapping("User/userById/{userId}")
+    public User getUserById(@PathVariable("userId") int userId) {
+        return userService.getUserById(userId);
     }
 
-    //封禁用户(管理员)
-    //传入要封禁用户的userId
-    @GetMapping("User/bannedUser/{userId}")
-    public boolean bannedUser(HttpSession session, @PathVariable("userId") int userId) {
-        User adminUser = (User) session.getAttribute("loginUser");
-        //身份验证
-        if (0 == adminUser.getUserLevel()) {
-            if (userService.bannedUser(userId)) {
-                return true;
-            }
-        }
-        return false;
+    //通过code查询用户信息
+    //传入userCode
+    @GetMapping("User/userByCode/{userCode}")
+    public User getUserByCode(@PathVariable("userCode") String userCode) {
+        return userService.getUserByCode(userCode);
     }
 
-    //注销用户(普通用户)
-    //传入userSecurityCode
-    @GetMapping("User/logoutUser/{userSecurityCode}")
-    public boolean logoutUser(HttpSession session, @PathVariable("userSecurityCode") String userSecurityCode) {
-        User logoutUser = (User) session.getAttribute("loginUser");
-        //安全验证，判断安全码与账号是否匹配
-        if (userSecurityCode.equals(logoutUser.getUserSecurityCode())) {
-            if (userService.removeUser(logoutUser.getUserId())) {
-                return true;
-            }
-        }
-        return false;
+    //通过name查询用户信息
+    //传入userName
+    @GetMapping("User/userByName/{userName}")
+    public User getUserByName(@PathVariable("userName") String userName) {
+        return userService.getUserByName(userName);
     }
 
     //登录
