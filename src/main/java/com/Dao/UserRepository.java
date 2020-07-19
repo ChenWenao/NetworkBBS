@@ -87,9 +87,10 @@ public class UserRepository {
     //注册
     public boolean insertUser(User newUser) {
         try {
-            template.update("insert into User(userName,userIcon,userPhoneNumber,userSecurityCode,userLevel,userCode,isEnable) values (?,?,?,?,?,?,1)"
+            template.update("insert into User(userName,userIcon,userPassword,userPhoneNumber,userSecurityCode,userLevel,userCode,isEnable) values (?,?,?,?,?,?,?,1)"
                     , newUser.getUserName()
                     , newUser.getUserIcon()
+                    , newUser.getUserPassword()
                     , newUser.getUserPhoneNumber()
                     , newUser.getUserSecurityCode()
                     , newUser.getUserLevel()
