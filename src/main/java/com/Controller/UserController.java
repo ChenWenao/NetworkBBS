@@ -93,8 +93,8 @@ public class UserController {
     public String modifyUser(HttpSession session, @RequestParam("userImg") MultipartFile userImg, @ModelAttribute(value = "modifyUser") User modifyUser) {
         //-----------------------------暂时新添的Session-------------------------------------
         User loginUser = new User();
-        loginUser.setUserId(14);
-        loginUser.setUserName("张三");
+        loginUser.setUserId(13);
+        loginUser.setUserName("文奥");
         session.setAttribute("loginUser", loginUser);
         //---------------------------------------------------------------------------------
         String msg = "";
@@ -102,7 +102,7 @@ public class UserController {
         //用户名不存在或存在但用户Id相同(不改变用户名只改其它信息)
         if (userService.getUserByName(modifyUser.getUserName()) == null || userService.getUserByName(modifyUser.getUserName()).getUserId() == lgUser.getUserId()) {
             //删除旧头像
-            toolService.deleteFile(userService.getUserByName(modifyUser.getUserName()).getUserIcon());
+            toolService.deleteFile(userService.getUserById(lgUser.getUserId()).getUserIcon());
             modifyUser.setUserIcon(toolService.FileToURL(userImg, "user"));
             modifyUser.setUserId(lgUser.getUserId());
             //修改信息
