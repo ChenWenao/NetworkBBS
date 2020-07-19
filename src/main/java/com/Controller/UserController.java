@@ -93,8 +93,8 @@ public class UserController {
     public String modifyUser(HttpSession session, @RequestParam("userImg") MultipartFile userImg, @ModelAttribute(value = "modifyUser") User modifyUser) {
         //-----------------------------暂时新添的Session-------------------------------------
         User loginUser = new User();
-        loginUser.setUserId(13);
-        loginUser.setUserName("文奥");
+        loginUser.setUserId(14);
+        loginUser.setUserName("张三");
         session.setAttribute("loginUser", loginUser);
         //---------------------------------------------------------------------------------
         String msg = "";
